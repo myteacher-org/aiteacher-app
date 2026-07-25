@@ -335,7 +335,19 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
                 javaScriptEnabled: true,
                 mediaPlaybackRequiresUserGesture: false,
                 allowsInlineMediaPlayback: true,
+                useOnDownloadStart: true,
               ),
+              onDownloadStartRequest: (controller, request) {
+                // The platform WebView can't render documents (PDF, Word,
+                // Excel, ...) inline and would otherwise hand them off to
+                // the OS as a download. Route them through Google's viewer
+                // instead so they open inside the app.
+                final viewerUrl =
+                    'https://docs.google.com/viewer?embedded=true&url=${Uri.encodeComponent(request.url.toString())}';
+                controller.loadUrl(
+                  urlRequest: URLRequest(url: WebUri(viewerUrl)),
+                );
+              },
               onWebViewCreated: (controller) {
                 _controller = controller;
                 controller.addJavaScriptHandler(
