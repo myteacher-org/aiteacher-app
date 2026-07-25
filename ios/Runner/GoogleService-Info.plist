@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>uz.myteacher.student</string>
+	<string>com.myteacher.student</string>
 	<key>PROJECT_ID</key>
 	<string>my-aiteacher</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:254841951410:ios:6fcea897598aadd0bc25ab</string>
+	<string>1:254841951410:ios:f23ddb0a79694c12bc25ab</string>
 </dict>
 </plist>

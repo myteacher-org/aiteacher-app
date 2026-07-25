@@ -51,11 +51,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBGCpspCq-pHgOYEAQgdAzynjUbj_EOpiQ',
-    appId: '1:254841951410:ios:6fcea897598aadd0bc25ab',
+    appId: '1:254841951410:ios:f23ddb0a79694c12bc25ab',
     messagingSenderId: '254841951410',
     projectId: 'my-aiteacher',
     storageBucket: 'my-aiteacher.firebasestorage.app',
-    iosBundleId: 'uz.myteacher.student',
+    iosBundleId: 'com.myteacher.student',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
