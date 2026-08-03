@@ -105,8 +105,13 @@ class CoursesPage extends ConsumerWidget {
     final user = ref.watch(currentUserProvider).valueOrNull;
     final plans =
         ref.watch(availablePlansProvider).valueOrNull ?? const <Plan>[];
-    final mentorPlans = plans.where((p) => p.hasMentor).toList();
-    final platformPlans = plans.where((p) => !p.hasMentor).toList();
+    // Demo accounts see the course content without any pricing: the hero and
+    // platform sections drop their price blocks when they get no plans.
+    final sellablePlans = ref.watch(isDemoAccountProvider)
+        ? const <Plan>[]
+        : plans;
+    final mentorPlans = sellablePlans.where((p) => p.hasMentor).toList();
+    final platformPlans = sellablePlans.where((p) => !p.hasMentor).toList();
     final subscription = user?.activeSubscription;
 
     return Scaffold(

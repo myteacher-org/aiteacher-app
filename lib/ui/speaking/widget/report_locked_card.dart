@@ -1,14 +1,17 @@
 import 'dart:ui';
 
 import 'package:ai_teacher/app/theme/app_colors.dart';
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/speaking/widget/unlock_report_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Wraps a report card so the title row stays clear while the body content
 /// is blurred behind a "Pro tarifda mavjud" overlay that opens the
-/// subscription sheet on tap.
-class ReportLockedCard extends StatelessWidget {
+/// subscription sheet on tap. Demo accounts keep the blur but the overlay is
+/// inert, so no purchase sheet can be reached.
+class ReportLockedCard extends ConsumerWidget {
   const ReportLockedCard({
     super.key,
     required this.child,
@@ -36,7 +39,8 @@ class ReportLockedCard extends StatelessWidget {
   final double cardRadius;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDemo = ref.watch(isDemoAccountProvider);
     return Stack(
       children: [
         child,
@@ -55,10 +59,12 @@ class ReportLockedCard extends StatelessWidget {
               child: Material(
                 color: Colors.white.withValues(alpha: 0.32),
                 child: InkWell(
-                  onTap: () => UnlockReportSheet.show(
-                    context,
-                    conversationId: conversationId,
-                  ),
+                  onTap: isDemo
+                      ? null
+                      : () => UnlockReportSheet.show(
+                          context,
+                          conversationId: conversationId,
+                        ),
                   child: const Center(child: _ProLockPill()),
                 ),
               ),

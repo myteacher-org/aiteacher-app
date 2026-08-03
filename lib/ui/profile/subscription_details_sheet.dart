@@ -38,6 +38,7 @@ class _SubscriptionDetailsSheetState
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(currentUserProvider).valueOrNull;
     final plansAsync = ref.watch(availablePlansProvider);
+    final isDemo = ref.watch(isDemoAccountProvider);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
@@ -69,41 +70,46 @@ class _SubscriptionDetailsSheetState
                     _CurrentSubscriptionCard(
                       subscription: user?.activeSubscription,
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      l10n.profileAvailablePlansLabel,
-                      style: const TextStyle(
-                        color: Color(0xFF111111),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    plansAsync.when(
-                      loading: () => const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24),
-                        child: Center(
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2.4),
-                          ),
+                    // Demo accounts get the status card only — no plans to buy.
+                    if (!isDemo) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        l10n.profileAvailablePlansLabel,
+                        style: const TextStyle(
+                          color: Color(0xFF111111),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.4,
                         ),
                       ),
-                      error: (_, _) =>
-                          _ErrorRow(text: l10n.profilePlansLoadError),
-                      data: (items) {
-                        if (items.isEmpty) {
-                          return _ErrorRow(text: l10n.profileNoPlansFound);
-                        }
-                        return Column(
-                          children: [
-                            for (final plan in items) _PlanCard(plan: plan),
-                          ],
-                        );
-                      },
-                    ),
+                      const SizedBox(height: 10),
+                      plansAsync.when(
+                        loading: () => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.4,
+                              ),
+                            ),
+                          ),
+                        ),
+                        error: (_, _) =>
+                            _ErrorRow(text: l10n.profilePlansLoadError),
+                        data: (items) {
+                          if (items.isEmpty) {
+                            return _ErrorRow(text: l10n.profileNoPlansFound);
+                          }
+                          return Column(
+                            children: [
+                              for (final plan in items) _PlanCard(plan: plan),
+                            ],
+                          );
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),

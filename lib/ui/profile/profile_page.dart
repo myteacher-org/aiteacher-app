@@ -161,8 +161,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final l10n = AppLocalizations.of(context);
     final locale = ref.watch(localeControllerProvider) ?? const Locale('uz');
     final user = ref.watch(currentUserProvider).valueOrNull;
-    final hideSubscriptionSection =
-        user?.phoneNumber.endsWith('990000000') ?? false;
+    final isDemo = ref.watch(isDemoAccountProvider);
     final displayName = user?.fullName ?? '';
     final displayPhone = UzPhoneFormatter.formatInternational(
       user?.phoneNumber ?? '',
@@ -244,7 +243,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
             ],
           ),
-          if (!hideSubscriptionSection) ...[
+          if (!isDemo) ...[
             ProfileSectionLabel(text: l10n.profileSectionSubscription),
             ProfileGroupCard(
               children: [

@@ -24,6 +24,7 @@ def flutter_root
 end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+require File.expand_path(File.join('patches', 'remove_private_apis'), __dir__)
 
 flutter_ios_podfile_setup
 
@@ -34,6 +35,10 @@ target 'Runner' do
 #   target 'RunnerTests' do
 #     inherit! :search_paths
 #   end
+end
+
+pre_install do |installer|
+  apply_private_api_patches
 end
 
 post_install do |installer|

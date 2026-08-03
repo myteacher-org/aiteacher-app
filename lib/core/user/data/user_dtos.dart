@@ -30,6 +30,18 @@ class User {
   String get initial =>
       firstName.isNotEmpty ? firstName.substring(0, 1).toUpperCase() : '?';
 
+  /// Demo accounts used for store review. Real users always sign up with a
+  /// phone number, so an account that carries an email and no phone is a
+  /// demo one. All payment UI is hidden for these accounts — read it through
+  /// `isDemoAccountProvider` rather than re-deriving it in the UI.
+  bool get isDemo {
+    final hasPhone = phoneNumber.trim().isNotEmpty;
+    final hasEmail = email?.trim().isNotEmpty ?? false;
+    // The legacy demo account predates the email-only rule and still signs
+    // in with this reserved phone number.
+    return (!hasPhone && hasEmail) || phoneNumber.endsWith('990000000');
+  }
+
   factory User.fromJson(Map<String, dynamic> json) {
     final sub = json['activeSubscription'];
     final stu = json['student'];

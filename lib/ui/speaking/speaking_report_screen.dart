@@ -130,7 +130,8 @@ class _SpeakingReportScreenState extends ConsumerState<SpeakingReportScreen> {
       l10n.speakingScreenTabRoadmap,
     ];
     final user = ref.watch(currentUserProvider).valueOrNull;
-    final showUpsell = user?.activeSubscription == null;
+    final showUpsell =
+        user?.activeSubscription == null && !ref.watch(isDemoAccountProvider);
     final pending = ref.watch(pendingReportPaymentProvider);
     final isWaiting =
         pending != null &&

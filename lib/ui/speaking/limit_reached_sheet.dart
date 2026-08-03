@@ -1,5 +1,6 @@
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/speaking/data/speaking_repository.dart';
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/profile/payment_types_sheet.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,8 @@ class _LimitReachedSheetState extends ConsumerState<LimitReachedSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // Demo accounts see why they were stopped, but get no way to pay out of it.
+    final isDemo = ref.watch(isDemoAccountProvider);
     return SizedBox.expand(
       child: DecoratedBox(
         decoration: const BoxDecoration(
@@ -167,19 +170,21 @@ class _LimitReachedSheetState extends ConsumerState<LimitReachedSheet> {
                   padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
                   child: Column(
                     children: [
-                      _AddonButton(
-                        addonPrice: widget.addonPrice,
-                        addonGrant: widget.addonGrant,
-                        loading: _purchasing,
-                        onTap: _onAddonTap,
-                      ),
-                      const SizedBox(height: 10),
-                      _SubscribeButton(
-                        onTap: () => Navigator.of(
-                          context,
-                        ).pop(LimitSheetAction.wantsSubscribe),
-                      ),
-                      const SizedBox(height: 10),
+                      if (!isDemo) ...[
+                        _AddonButton(
+                          addonPrice: widget.addonPrice,
+                          addonGrant: widget.addonGrant,
+                          loading: _purchasing,
+                          onTap: _onAddonTap,
+                        ),
+                        const SizedBox(height: 10),
+                        _SubscribeButton(
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pop(LimitSheetAction.wantsSubscribe),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                       _DismissAction(onTap: () => Navigator.of(context).pop()),
                     ],
                   ),
