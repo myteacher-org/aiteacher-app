@@ -1,5 +1,6 @@
 import 'package:ai_teacher/core/course/data/course_dtos.dart';
 import 'package:ai_teacher/core/course/data/course_repository.dart';
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CoursesState {
@@ -25,6 +26,9 @@ class CoursesController extends AutoDisposeAsyncNotifier<CoursesState> {
   }
 
   Future<void> refresh() async {
+    // Pull-to-refresh should also pick up a subscription/plan change, since
+    // course access is gated on the cached currentUserProvider value.
+    ref.invalidate(currentUserProvider);
     ref.invalidateSelf();
     await future;
   }

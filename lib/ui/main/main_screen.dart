@@ -52,7 +52,8 @@ class MainScreen extends ConsumerStatefulWidget {
   ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen>
+    with WidgetsBindingObserver {
   late int _activeTab = widget.initialTab;
 
   static const _pages = <Widget>[
@@ -72,14 +73,26 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _chatUnreadSub?.cancel();
     _promoSub?.cancel();
     super.dispose();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Server-side changes (e.g. a subscription being deactivated) only show
+    // up once /users/me is refetched. Refresh on every resume so returning
+    // from background always reflects the latest plan/course access.
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(currentUserProvider);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       ref.read(callControllerProvider.notifier).ensureListening();
@@ -209,6 +222,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       return;
     }
     if (index == _activeTab) return;
+    if (index == MainScreen.coursesTab || index == MainScreen.profileTab) {
+      // Plan/course access is gated on activeSubscription; refetch it so a
+      // subscription deactivated server-side is reflected as soon as the
+      // user opens either tab, not just after logout/login.
+      ref.invalidate(currentUserProvider);
+    }
     setState(() => _activeTab = index);
   }
 

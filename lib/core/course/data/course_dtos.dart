@@ -10,6 +10,7 @@ class Course {
     this.login,
     this.password,
     this.isDemo = false,
+    this.isAvailable = true,
   });
 
   final String id;
@@ -31,6 +32,11 @@ class Course {
   /// True when this enrollment is a demo (has demoPaymentId and short endDate).
   final bool isDemo;
 
+  /// From `GET /courses/mine` only: whether this enrollment currently grants
+  /// access (not deactivated, not expired). Always `true` for entries from
+  /// `GET /courses` (plain browsing, not tied to an enrollment).
+  final bool isAvailable;
+
   Course copyWith({String? login, String? password}) => Course(
     id: id,
     title: title,
@@ -42,6 +48,7 @@ class Course {
     login: login ?? this.login,
     password: password ?? this.password,
     isDemo: isDemo,
+    isAvailable: isAvailable,
   );
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -56,6 +63,7 @@ class Course {
       login: json['login'] as String?,
       password: json['password'] as String?,
       isDemo: json['isDemo'] as bool? ?? false,
+      isAvailable: json['isAvailable'] as bool? ?? true,
     );
   }
 }

@@ -1422,8 +1422,34 @@ class _EnrolledCourseCard extends StatelessWidget {
 
   final Course course;
 
+  void _onTap(BuildContext context) {
+    if (course.isAvailable) {
+      CourseInfoSheet.showEnrolled(
+        context,
+        course: course,
+        onNavigate: () =>
+            context.pushNamed(AppRoute.courseWeb.name, extra: course),
+      );
+      return;
+    }
+    // Access was revoked (deactivated or expired) — no login/password is
+    // returned by the backend for this entry, so it can't open the course
+    // anymore. Show the same "not purchased" sheet a never-enrolled course
+    // gets, instead of the WebView.
+    CourseInfoSheet.showAvailable(
+      context,
+      course: course,
+      onDemo: () {
+        final price = course.demoPrice;
+        if (price == null) return;
+        PaymentTypesSheet.show(context, amount: price, title: course.title);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1441,59 +1467,77 @@ class _EnrolledCourseCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => CourseInfoSheet.showEnrolled(
-            context,
-            course: course,
-            onNavigate: () =>
-                context.pushNamed(AppRoute.courseWeb.name, extra: course),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _CourseCover(coverUrl: course.coverUrl),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            course.title,
-                            style: const TextStyle(
-                              color: Color(0xFF0F172A),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              height: 1.3,
+          onTap: () => _onTap(context),
+          child: Opacity(
+            opacity: course.isAvailable ? 1 : 0.6,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _CourseCover(coverUrl: course.coverUrl),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              course.title,
+                              style: const TextStyle(
+                                color: Color(0xFF0F172A),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                height: 1.3,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: Color(0xFFCBD5E1),
+                          const SizedBox(width: 8),
+                          if (!course.isAvailable)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEE2E2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                l10n.coursesInactiveLabel,
+                                style: const TextStyle(
+                                  color: Color(0xFFDC2626),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            )
+                          else
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 14,
+                              color: Color(0xFFCBD5E1),
+                            ),
+                        ],
+                      ),
+                      if ((course.description ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          course.description!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF64748B),
+                            fontSize: 13,
+                            height: 1.45,
+                          ),
                         ),
                       ],
-                    ),
-                    if ((course.description ?? '').isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        course.description!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Color(0xFF64748B),
-                          fontSize: 13,
-                          height: 1.45,
-                        ),
-                      ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

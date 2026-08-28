@@ -452,6 +452,7 @@
   "coursesChatbotEmptyHint": "Ingliz tili bo'yicha\nbiror savol bering!",
   "coursesChatbotInputHint": "Savolingizni yozing…",
   "coursesEnterCourseLabel": "Kursga kirish →",
+  "coursesInactiveLabel": "Nofaol",
   "coursesMoreInfoLabel": "Batafsil ma'lumot",
   "coursesDemoPriceLabel": "Demo olish · {price}",
   "@coursesDemoPriceLabel": {

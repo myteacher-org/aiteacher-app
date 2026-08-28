@@ -452,6 +452,7 @@
   "coursesChatbotEmptyHint": "Ask a question about\nEnglish!",
   "coursesChatbotInputHint": "Type your question…",
   "coursesEnterCourseLabel": "Enter course →",
+  "coursesInactiveLabel": "Inactive",
   "coursesMoreInfoLabel": "More info",
   "coursesDemoPriceLabel": "Get demo · {price}",
   "@coursesDemoPriceLabel": {
