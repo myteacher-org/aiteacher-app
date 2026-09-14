@@ -2,6 +2,8 @@ import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
+import 'package:ai_teacher/core/timetable/data/timetable_dtos.dart';
+import 'package:ai_teacher/core/timetable/presentation/timetable_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,7 @@ class MyMentorCard extends ConsumerWidget {
     if (myMentor == null) return const SizedBox.shrink();
 
     final mentor = myMentor.mentor;
+    final nextLesson = ref.watch(nextUpcomingLessonProvider);
     final name = mentor.fullName.isNotEmpty
         ? mentor.fullName
         : '${mentor.firstName} ${mentor.lastName}'.trim();
@@ -88,6 +91,69 @@ class MyMentorCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 14),
+          if (nextLesson != null)
+            Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.primarySubtle,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today_rounded,
+                    size: 15,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "Keyingi dars: ${_lessonLabel(nextLesson)}",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.primaryDark,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => context.pushNamed(
+                    AppRoute.slotPicker.name,
+                    extra: BookableMentor(
+                      mentorId: mentor.id,
+                      firstName: mentor.firstName,
+                      lastName: mentor.lastName,
+                      fullName: name,
+                      avatar: mentor.avatar,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.calendar_month_rounded, size: 16),
+                  label: const Text(
+                    'Keyingi darsni bron qilish',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
@@ -197,6 +263,12 @@ const _enMonths = [
   'November',
   'December',
 ];
+
+String _lessonLabel(UpcomingLesson lesson) {
+  final l = lesson.startsAt.toLocal();
+  return '${l.day.toString().padLeft(2, '0')}.${l.month.toString().padLeft(2, '0')} · '
+      '${l.hour.toString().padLeft(2, '0')}:${l.minute.toString().padLeft(2, '0')}';
+}
 
 String _formatDate(DateTime d, BuildContext context) {
   final local = d.toLocal();
