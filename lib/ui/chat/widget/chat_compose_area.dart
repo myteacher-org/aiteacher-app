@@ -6,10 +6,14 @@ class ChatComposeArea extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onSend,
+    required this.onAttach,
+    this.attachEnabled = true,
   });
 
   final TextEditingController controller;
   final VoidCallback onSend;
+  final VoidCallback onAttach;
+  final bool attachEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +25,29 @@ class ChatComposeArea extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
       child: SafeArea(
         top: false,
-        child: _ComposeRow(controller: controller, onSend: onSend),
+        child: _ComposeRow(
+          controller: controller,
+          onSend: onSend,
+          onAttach: onAttach,
+          attachEnabled: attachEnabled,
+        ),
       ),
     );
   }
 }
 
 class _ComposeRow extends StatelessWidget {
-  const _ComposeRow({required this.controller, required this.onSend});
+  const _ComposeRow({
+    required this.controller,
+    required this.onSend,
+    required this.onAttach,
+    required this.attachEnabled,
+  });
 
   final TextEditingController controller;
   final VoidCallback onSend;
+  final VoidCallback onAttach;
+  final bool attachEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +55,8 @@ class _ComposeRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        _AttachButton(onTap: onAttach, enabled: attachEnabled),
+        const SizedBox(width: 8),
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -78,6 +96,49 @@ class _ComposeRow extends StatelessWidget {
         const SizedBox(width: 8),
         _SendButton(onTap: onSend),
       ],
+    );
+  }
+}
+
+class _AttachButton extends StatelessWidget {
+  const _AttachButton({required this.onTap, required this.enabled});
+
+  final VoidCallback onTap;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFEDEAE4),
+      borderRadius: BorderRadius.circular(13),
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(13),
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: enabled
+              ? const Icon(
+                  Icons.attach_file_rounded,
+                  color: Color(0xFF555555),
+                  size: 18,
+                )
+              : const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Color(0xFF9CA3AF)),
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+      ),
     );
   }
 }

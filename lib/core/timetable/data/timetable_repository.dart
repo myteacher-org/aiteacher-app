@@ -13,9 +13,11 @@ class TimetableRepository {
   final Dio _dio;
 
   /// Mentors currently bookable (have at least one future open slot).
+  /// The backend returns a bare JSON array here (unlike the other list
+  /// endpoints, which wrap in `{"slots": [...]}`).
   Future<List<BookableMentor>> listMentors() async {
-    final response = await _dio.get<Map<String, dynamic>>('timetable/mentors');
-    final raw = (response.data?['mentors'] as List?) ?? [];
+    final response = await _dio.get<List<dynamic>>('timetable/mentors');
+    final raw = response.data ?? [];
     return raw
         .cast<Map<String, dynamic>>()
         .map(BookableMentor.fromJson)
@@ -24,13 +26,10 @@ class TimetableRepository {
 
   Future<List<BookableSlot>> listMentorSlots(String mentorId) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      'timetable/mentors/$mentorId/slots',
+      'mentors/$mentorId/slots',
     );
     final raw = (response.data?['slots'] as List?) ?? [];
-    return raw
-        .cast<Map<String, dynamic>>()
-        .map(BookableSlot.fromJson)
-        .toList();
+    return raw.cast<Map<String, dynamic>>().map(BookableSlot.fromJson).toList();
   }
 
   Future<BookingResult> bookSlot(String slotId) async {

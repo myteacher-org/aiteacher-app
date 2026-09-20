@@ -30,6 +30,9 @@ class ChatMessage {
     required this.authorFullName,
     required this.authorRole,
     required this.sentAt,
+    this.fileUrl,
+    this.fileName,
+    this.fileType,
   });
 
   final String id;
@@ -39,6 +42,11 @@ class ChatMessage {
   final String authorFullName;
   final String authorRole;
   final DateTime sentAt;
+  final String? fileUrl;
+  final String? fileName;
+  final String? fileType;
+
+  bool get hasAttachment => fileUrl != null && fileUrl!.isNotEmpty;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -49,6 +57,9 @@ class ChatMessage {
       authorFullName: json['authorFullName'] as String? ?? '',
       authorRole: json['authorRole'] as String? ?? '',
       sentAt: _parseDate(json['sentAt']),
+      fileUrl: json['fileUrl'] as String?,
+      fileName: json['fileName'] as String?,
+      fileType: json['fileType'] as String?,
     );
   }
 }

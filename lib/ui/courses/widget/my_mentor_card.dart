@@ -8,6 +8,7 @@ import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Shown only when the student already has a mentor assigned — the courses
 /// page's `_TeacherHeroSection` already covers the "get a mentor" pitch for
@@ -94,33 +95,75 @@ class MyMentorCard extends ConsumerWidget {
           if (nextLesson != null)
             Container(
               margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 10,
-              ),
               decoration: BoxDecoration(
                 color: AppColors.primarySubtle,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.calendar_today_rounded,
-                    size: 15,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Keyingi dars: ${_lessonLabel(nextLesson)}",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.primaryDark,
-                      ),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => context.pushNamed(AppRoute.upcomingLessons.name),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today_rounded,
+                          size: 15,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            "Keyingi dars: ${_lessonLabel(nextLesson)}",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryDark,
+                            ),
+                          ),
+                        ),
+                        if (nextLesson.meetLink != null) ...[
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () => launchUrl(
+                              Uri.parse(nextLesson.meetLink!),
+                              mode: LaunchMode.externalApplication,
+                            ),
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.primaryDark,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              minimumSize: Size.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: const Text(
+                              'Meet',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ] else
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             )
           else

@@ -71,19 +71,6 @@ class CallSocket {
       (data) => _dispatchSimple(data, (id) => CallDeclinedEvent(id)),
     );
     socket.on('call-ended', (data) => _dispatchEnded(data));
-    socket.on(
-      'offer',
-      (data) =>
-          _dispatchSdp(data, (id, sdp) => CallOfferEvent(callId: id, sdp: sdp)),
-    );
-    socket.on(
-      'answer',
-      (data) => _dispatchSdp(
-        data,
-        (id, sdp) => CallAnswerEvent(callId: id, sdp: sdp),
-      ),
-    );
-    socket.on('ice-candidate', (data) => _dispatchIce(data));
 
     socket.connect();
     _socket = socket;
@@ -96,17 +83,6 @@ class CallSocket {
 
   Future<void> hangup(String callId, {String? reason}) =>
       _emitAck('hangup', {'callId': callId, 'reason': ?reason});
-
-  Future<void> sendOffer(String callId, Map<String, dynamic> sdp) =>
-      _emitAck('offer', {'callId': callId, 'sdp': sdp});
-
-  Future<void> sendAnswer(String callId, Map<String, dynamic> sdp) =>
-      _emitAck('answer', {'callId': callId, 'sdp': sdp});
-
-  Future<void> sendIceCandidate(
-    String callId,
-    Map<String, dynamic> candidate,
-  ) => _emitAck('ice-candidate', {'callId': callId, 'candidate': candidate});
 
   Future<void> _emitAck(String event, Map<String, dynamic> payload) async {
     final socket = _socket;
@@ -158,25 +134,6 @@ class CallSocket {
         callId: m['callId'] as String? ?? '',
         reason: m['reason'] as String?,
       ),
-    );
-  }
-
-  void _dispatchSdp(
-    dynamic raw,
-    CallEvent Function(String id, Map<String, dynamic> sdp) build,
-  ) {
-    if (raw is! Map) return;
-    final m = raw.cast<String, dynamic>();
-    final sdp = (m['sdp'] as Map?)?.cast<String, dynamic>() ?? const {};
-    _events.add(build(m['callId'] as String? ?? '', sdp));
-  }
-
-  void _dispatchIce(dynamic raw) {
-    if (raw is! Map) return;
-    final m = raw.cast<String, dynamic>();
-    final cand = (m['candidate'] as Map?)?.cast<String, dynamic>() ?? const {};
-    _events.add(
-      CallIceEvent(callId: m['callId'] as String? ?? '', candidate: cand),
     );
   }
 

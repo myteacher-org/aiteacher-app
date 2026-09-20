@@ -101,6 +101,7 @@ class UpcomingLesson {
     required this.durationMin,
     required this.assignmentId,
     required this.mentor,
+    this.meetLink,
   });
 
   final String id;
@@ -108,6 +109,11 @@ class UpcomingLesson {
   final int durationMin;
   final String assignmentId;
   final BookableMentor mentor;
+
+  /// Auto-generated Google Meet link for this lesson, if the backend has
+  /// created one yet — null for lessons booked before Meet integration
+  /// landed, or if generation is still pending.
+  final String? meetLink;
 
   DateTime get endsAt => startsAt.add(Duration(minutes: durationMin));
 
@@ -122,6 +128,7 @@ class UpcomingLesson {
       mentor: BookableMentor.fromJson(
         (json['mentor'] as Map?)?.cast<String, dynamic>() ?? const {},
       ),
+      meetLink: json['meetLink'] as String?,
     );
   }
 }

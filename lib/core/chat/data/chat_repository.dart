@@ -39,10 +39,23 @@ class ChatRepository {
         .toList(growable: false);
   }
 
-  Future<ChatMessage> sendMessage(String roomId, {required String text}) async {
+  /// REST send — the only path that can carry a file (sockets can't). Also
+  /// usable for text-only as a fallback when the socket isn't connected.
+  /// At least one of [text]/[filePath] must be given, per the API contract.
+  Future<ChatMessage> sendMessage(
+    String roomId, {
+    String? text,
+    String? filePath,
+    String? fileName,
+  }) async {
+    final form = FormData.fromMap({
+      if (text != null && text.isNotEmpty) 'text': text,
+      if (filePath != null)
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+    });
     final response = await _dio.post<Map<String, dynamic>>(
       'chat/rooms/$roomId/messages',
-      data: {'text': text},
+      data: form,
     );
     return ChatMessage.fromJson(response.data ?? const {});
   }

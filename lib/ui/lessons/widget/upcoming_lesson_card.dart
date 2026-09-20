@@ -6,6 +6,7 @@ import 'package:ai_teacher/core/timetable/domain/call_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// A single upcoming (booked) lesson, with a Join button that lights up
 /// once inside the call window. Visual family matches [LiveCard]'s
@@ -58,6 +59,9 @@ class UpcomingLessonCard extends ConsumerWidget {
               ],
             ),
           ),
+          // One trailing action at a time — Join takes priority when the
+          // call window is open (more time-sensitive), otherwise fall back
+          // to the Meet link if the backend has generated one.
           if (joinable)
             FilledButton(
               onPressed: () {
@@ -78,6 +82,28 @@ class UpcomingLessonCard extends ConsumerWidget {
               ),
               child: const Text(
                 "Qo'shilish",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+              ),
+            )
+          else if (lesson.meetLink != null)
+            TextButton(
+              onPressed: () => launchUrl(
+                Uri.parse(lesson.meetLink!),
+                mode: LaunchMode.externalApplication,
+              ),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.primarySubtle,
+                foregroundColor: AppColors.primaryDark,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: const Text(
+                'Meet',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
               ),
             ),

@@ -40,9 +40,10 @@ class BookSlotNotifier extends AsyncNotifier<BookingResult?> {
   void reset() => state = const AsyncData(null);
 }
 
-final bookSlotProvider = AsyncNotifierProvider<BookSlotNotifier, BookingResult?>(
-  BookSlotNotifier.new,
-);
+final bookSlotProvider =
+    AsyncNotifierProvider<BookSlotNotifier, BookingResult?>(
+      BookSlotNotifier.new,
+    );
 
 /// The soonest upcoming booked lesson, if any — used by [MyMentorCard] to
 /// show a "next lesson" row without a separate network call.

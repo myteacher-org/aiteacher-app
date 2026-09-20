@@ -154,6 +154,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: AppRoute.linkWeb.path,
+        name: AppRoute.linkWeb.name,
+        builder: (context, state) {
+          final args = state.extra as LinkWebArgs;
+          return CourseWebScreen(title: args.title, url: args.url);
+        },
+      ),
+      GoRoute(
         path: AppRoute.notifications.path,
         name: AppRoute.notifications.name,
         builder: (context, state) => const NotificationsScreen(),
@@ -245,6 +253,7 @@ enum AppRoute {
   vocabularyTraining('/vocabulary-training'),
   wordBattle('/word-battle'),
   courseWeb('/course-web'),
+  linkWeb('/link-web'),
   mentorBrowse('/booking/mentors'),
   slotPicker('/booking/slots'),
   bookingConfirm('/booking/confirm'),

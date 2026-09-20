@@ -64,7 +64,8 @@ class UpcomingLessonsScreen extends ConsumerWidget {
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                           itemCount: lessons.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 10),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 10),
                           itemBuilder: (context, i) =>
                               UpcomingLessonCard(lesson: lessons[i]),
                         ),

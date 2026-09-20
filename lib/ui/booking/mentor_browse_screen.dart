@@ -36,7 +36,8 @@ class MentorBrowseScreen extends ConsumerWidget {
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                           itemCount: mentors.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 10),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 10),
                           itemBuilder: (context, i) =>
                               _MentorTile(mentor: mentors[i]),
                         ),
@@ -95,10 +96,7 @@ class _MentorTile extends StatelessWidget {
     final initials = _initials(mentor.firstName, mentor.lastName);
 
     return GestureDetector(
-      onTap: () => context.pushNamed(
-        AppRoute.slotPicker.name,
-        extra: mentor,
-      ),
+      onTap: () => context.pushNamed(AppRoute.slotPicker.name, extra: mentor),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(

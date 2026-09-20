@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>AI Teacher kamerasiz audio qo'ng'iroqlardan foydalanadi; kamera talab qilinmaydi.</string>
+	<string>Video darslarni ko'rish uchun kamera kerak.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Profil rasmingizni yangilash uchun galereyaga kirish kerak.</string>
 	<key>NSMicrophoneUsageDescription</key>
