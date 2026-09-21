@@ -1,6 +1,6 @@
 class NetworkConfig {
   static const String devHostUrl =
-      'https://8f3f-188-113-194-118.ngrok-free.app';
+      'https://28d4-37-110-214-131.ngrok-free.app';
   static const String mainHostUrl = 'https://ai.myteacher.uz';
 
   // TEMP: pointed at production at your request (the ngrok dev tunnel keeps

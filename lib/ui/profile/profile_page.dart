@@ -12,6 +12,7 @@ import 'package:ai_teacher/ui/profile/edit_profile_dialog.dart';
 import 'package:ai_teacher/ui/profile/language_picker_sheet.dart';
 import 'package:ai_teacher/ui/profile/subscription_details_sheet.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_group_card.dart';
+import 'package:ai_teacher/ui/profile/widget/profile_leaderboard_card.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_pill_badge.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_row.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_section_label.dart';
@@ -188,6 +189,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             avatarPath: user?.avatar,
             onTapAvatar: _pickAndUploadAvatar,
             uploadingAvatar: _uploadingAvatar,
+          ),
+          ProfileLeaderboardCard(
+            onTap: () => context.pushNamed(AppRoute.leaderboard.name),
           ),
           ProfileSectionLabel(text: l10n.profileSectionAccount),
           ProfileGroupCard(
