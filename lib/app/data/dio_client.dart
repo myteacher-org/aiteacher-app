@@ -12,6 +12,10 @@ final _dioOptions = BaseOptions(
   headers: const {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    // Debug builds point at an ngrok tunnel during local backend testing —
+    // without this header ngrok's free-tier interstitial HTML page comes
+    // back instead of the real API response. Harmless against production.
+    'ngrok-skip-browser-warning': 'true',
   },
 );
 

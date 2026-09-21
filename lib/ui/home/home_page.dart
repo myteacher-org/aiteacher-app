@@ -1,9 +1,11 @@
 import 'package:ai_teacher/app/data/cache_service.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/cashback/cashback_info_sheet.dart';
+import 'package:ai_teacher/ui/home/widget/book_demo_card.dart';
 import 'package:ai_teacher/ui/home/widget/cashback_card.dart';
 import 'package:ai_teacher/ui/home/widget/dictionary_card.dart';
 import 'package:ai_teacher/ui/home/widget/home_header.dart';
@@ -144,7 +146,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   ),
                 ),
-                const RadarCard(),
+                ref.watch(myMentorProvider).valueOrNull == null
+                    ? const BookDemoCard()
+                    : const RadarCard(),
                 SectionHeader(
                   title: l10n.homeStreakSectionTitle,
                   actionLabel: l10n.homeSeeMoreAction,

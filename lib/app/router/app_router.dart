@@ -6,7 +6,11 @@ import 'package:ai_teacher/core/speaking/data/assessment.dart';
 import 'package:ai_teacher/ui/auth/login_screen.dart';
 import 'package:ai_teacher/ui/auth/otp_screen.dart';
 import 'package:ai_teacher/ui/auth/register_screen.dart';
+import 'package:ai_teacher/core/timetable/data/timetable_dtos.dart';
 import 'package:ai_teacher/ui/battle/battle_screen.dart';
+import 'package:ai_teacher/ui/booking/booking_confirm_screen.dart';
+import 'package:ai_teacher/ui/booking/mentor_browse_screen.dart';
+import 'package:ai_teacher/ui/booking/slot_picker_screen.dart';
 import 'package:ai_teacher/ui/call/call_screen.dart';
 import 'package:ai_teacher/ui/chat/chat_screen.dart';
 import 'package:ai_teacher/ui/courses/course_web_screen.dart';
@@ -16,6 +20,7 @@ import 'package:ai_teacher/ui/dictionary/dictionary_saved_words_screen.dart';
 import 'package:ai_teacher/ui/dictionary/dictionary_search_screen.dart';
 import 'package:ai_teacher/ui/dictionary/dictionary_stats_screen.dart';
 import 'package:ai_teacher/ui/language/language_select_screen.dart';
+import 'package:ai_teacher/ui/lessons/upcoming_lessons_screen.dart';
 import 'package:ai_teacher/ui/main/main_screen.dart';
 import 'package:ai_teacher/ui/notifications/notifications_screen.dart';
 import 'package:ai_teacher/ui/onboarding/onboarding_screen.dart';
@@ -149,9 +154,39 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: AppRoute.linkWeb.path,
+        name: AppRoute.linkWeb.name,
+        builder: (context, state) {
+          final args = state.extra as LinkWebArgs;
+          return CourseWebScreen(title: args.title, url: args.url);
+        },
+      ),
+      GoRoute(
         path: AppRoute.notifications.path,
         name: AppRoute.notifications.name,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.mentorBrowse.path,
+        name: AppRoute.mentorBrowse.name,
+        builder: (context, state) => const MentorBrowseScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.slotPicker.path,
+        name: AppRoute.slotPicker.name,
+        builder: (context, state) =>
+            SlotPickerScreen(mentor: state.extra as BookableMentor),
+      ),
+      GoRoute(
+        path: AppRoute.bookingConfirm.path,
+        name: AppRoute.bookingConfirm.name,
+        builder: (context, state) =>
+            BookingConfirmScreen(selection: state.extra as BookingSelection),
+      ),
+      GoRoute(
+        path: AppRoute.upcomingLessons.path,
+        name: AppRoute.upcomingLessons.name,
+        builder: (context, state) => const UpcomingLessonsScreen(),
       ),
       GoRoute(
         path: AppRoute.support.path,
@@ -218,6 +253,11 @@ enum AppRoute {
   vocabularyTraining('/vocabulary-training'),
   wordBattle('/word-battle'),
   courseWeb('/course-web'),
+  linkWeb('/link-web'),
+  mentorBrowse('/booking/mentors'),
+  slotPicker('/booking/slots'),
+  bookingConfirm('/booking/confirm'),
+  upcomingLessons('/lessons/upcoming'),
   support('/support'),
   writingTask('/writing-task'),
   writingTaskDetail('/writing-task/detail'),

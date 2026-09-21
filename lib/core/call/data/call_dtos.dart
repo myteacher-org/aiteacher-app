@@ -96,20 +96,25 @@ class CallEndedEvent extends CallEvent {
   final String? reason;
 }
 
-class CallOfferEvent extends CallEvent {
-  const CallOfferEvent({required String callId, required this.sdp})
-    : super(callId);
-  final Map<String, dynamic> sdp;
-}
+/// A short-lived LiveKit room-join token, minted by the backend once a call
+/// has been accepted. The media path connects to [url]/[roomName] using
+/// this token instead of exchanging SDP/ICE directly with the peer.
+class LiveKitToken {
+  const LiveKitToken({
+    required this.token,
+    required this.url,
+    required this.roomName,
+  });
 
-class CallAnswerEvent extends CallEvent {
-  const CallAnswerEvent({required String callId, required this.sdp})
-    : super(callId);
-  final Map<String, dynamic> sdp;
-}
+  final String token;
+  final String url;
+  final String roomName;
 
-class CallIceEvent extends CallEvent {
-  const CallIceEvent({required String callId, required this.candidate})
-    : super(callId);
-  final Map<String, dynamic> candidate;
+  factory LiveKitToken.fromJson(Map<String, dynamic> json) {
+    return LiveKitToken(
+      token: json['token'] as String? ?? '',
+      url: json['url'] as String? ?? '',
+      roomName: json['roomName'] as String? ?? '',
+    );
+  }
 }

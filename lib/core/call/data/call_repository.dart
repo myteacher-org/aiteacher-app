@@ -32,4 +32,11 @@ class CallRepository {
   Future<void> rate(String callId, int rating) async {
     await _dio.patch<void>('calls/$callId/rate', data: {'rating': rating});
   }
+
+  Future<LiveKitToken> getLiveKitToken(String callId) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      'calls/$callId/livekit-token',
+    );
+    return LiveKitToken.fromJson(response.data ?? const {});
+  }
 }

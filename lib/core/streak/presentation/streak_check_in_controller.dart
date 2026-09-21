@@ -1,3 +1,4 @@
+import 'package:ai_teacher/app/data/cache_service.dart';
 import 'package:ai_teacher/core/streak/data/streak_dtos.dart';
 import 'package:ai_teacher/core/streak/data/streak_repository.dart';
 import 'package:ai_teacher/core/streak/presentation/streak_controller.dart';
@@ -16,12 +17,27 @@ class StreakCheckInController extends Notifier<bool> {
   bool build() => false;
 
   /// Returns the freshly checked-in [WeeklyStreak] on success, or `null` if
-  /// it was already run this session or the call failed.
+  /// today's check-in already happened (this session, or on an earlier
+  /// launch the same day) or the call failed.
+  ///
+  /// The session flag alone only stops duplicate calls within one app run —
+  /// it does nothing on the next cold start, so the bonus would otherwise
+  /// be re-awarded every time the app is reopened on a day already checked
+  /// in, since the endpoint isn't guaranteed to dedupe that itself. Track
+  /// the last successful date locally so a later launch the same day is a
+  /// no-op regardless of backend behavior.
   Future<WeeklyStreak?> runIfNeeded() async {
     if (state) return null;
+    final cache = ref.read(cacheServiceProvider);
+    final today = _todayKey();
+    if (cache.lastStreakCheckInDate == today) {
+      state = true;
+      return null;
+    }
     state = true;
     try {
       final updated = await ref.read(streakRepositoryProvider).checkIn();
+      await cache.setLastStreakCheckInDate(today);
       ref.invalidate(weeklyStreakProvider);
       return updated;
     } catch (e) {
@@ -29,5 +45,10 @@ class StreakCheckInController extends Notifier<bool> {
       state = false;
       return null;
     }
+  }
+
+  String _todayKey() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 }

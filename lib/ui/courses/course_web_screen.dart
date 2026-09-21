@@ -13,6 +13,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+/// Args for opening an arbitrary link (e.g. a lesson.myteacher.uz link a
+/// mentor shared in chat) through [CourseWebScreen] via `AppRoute.linkWeb`,
+/// without needing a full [Course] object.
+class LinkWebArgs {
+  const LinkWebArgs({required this.title, required this.url});
+
+  final String title;
+  final String url;
+}
 
 class CourseWebScreen extends ConsumerStatefulWidget {
   const CourseWebScreen({
@@ -184,12 +195,30 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
     _controller?.evaluateJavascript(source: _observerScript);
   }
 
+  /// Matches either the main course platform's login form
+  /// (`input[name="email"|"password"]` on a `/auth/login` URL) or
+  /// `lesson.myteacher.uz`'s own login form (`#login`/`#parol` on
+  /// `login.html`) — mentors share lesson links in chat, and students land
+  /// on whichever of the two the link points at.
   void _tryAutoFill(WebUri? url) {
     final urlStr = url?.toString() ?? '';
-    if (!urlStr.contains('/auth/login')) return;
+    if (!urlStr.contains('/auth/login') && !urlStr.contains('login.html')) {
+      return;
+    }
 
-    final login = widget.login;
-    final password = widget.password;
+    // Falls back to the credentials cached at sign-in (see
+    // `LoginController`/`OtpController`) when the caller didn't pass an
+    // explicit login/password — covers links opened via `AppRoute.linkWeb`
+    // (e.g. a lesson.myteacher.uz link shared in chat), which aren't tied
+    // to a specific [Course]. lesson.myteacher.uz's own login form expects
+    // the phone number without the "+998" prefix the app stores it with.
+    final cachedIdentifier = _cache.webIdentifier;
+    final login =
+        widget.login ??
+        (urlStr.contains('login.html')
+            ? cachedIdentifier?.replaceFirst('+998', '')
+            : cachedIdentifier);
+    final password = widget.password ?? _cache.webPassword;
     if (login == null ||
         login.isEmpty ||
         password == null ||
@@ -218,8 +247,10 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
   var maxAttempts = 30;
 
   function tryFill() {
-    var emailEl = document.querySelector('input[name="email"]');
-    var passwordEl = document.querySelector('input[name="password"]');
+    var emailEl = document.querySelector('input[name="email"]') ||
+                  document.getElementById('login');
+    var passwordEl = document.querySelector('input[name="password"]') ||
+                      document.getElementById('parol');
 
     if (!emailEl || !passwordEl) {
       if (++attempts < maxAttempts) setTimeout(tryFill, 300);
@@ -231,12 +262,14 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
     setReactInputValue(passwordEl, $pwJson);
 
     setTimeout(function() {
+      var form = emailEl.closest('form');
       var btn = document.querySelector('button[type="submit"]');
-      if (btn) {
+      if (form && form.requestSubmit) {
+        form.requestSubmit();
+      } else if (btn) {
         btn.click();
-      } else {
-        var form = emailEl.closest('form');
-        if (form) form.dispatchEvent(
+      } else if (form) {
+        form.dispatchEvent(
           new Event('submit', { bubbles: true, cancelable: true })
         );
       }
@@ -337,6 +370,18 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
                 allowsInlineMediaPlayback: true,
                 useOnDownloadStart: true,
               ),
+              onPermissionRequest: (controller, request) async {
+                // Video lessons (lesson.myteacher.uz links shared in chat)
+                // run over in-browser WebRTC and need camera + mic. Granting
+                // the JS-side request alone does nothing unless the
+                // underlying Android runtime permission has actually been
+                // granted first — request it here.
+                await [Permission.camera, Permission.microphone].request();
+                return PermissionResponse(
+                  resources: request.resources,
+                  action: PermissionResponseAction.GRANT,
+                );
+              },
               onDownloadStartRequest: (controller, request) {
                 // The platform WebView can't render documents (PDF, Word,
                 // Excel, ...) inline and would otherwise hand them off to

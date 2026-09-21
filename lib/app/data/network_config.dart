@@ -1,12 +1,11 @@
-import 'package:flutter/foundation.dart';
-
 class NetworkConfig {
-  static const String devHostUrl = 'http://192.168.0.2:8000';
+  static const String devHostUrl =
+      'https://8f3f-188-113-194-118.ngrok-free.app';
   static const String mainHostUrl = 'https://ai.myteacher.uz';
 
-  static String get hostUrl => kDebugMode ? devHostUrl : mainHostUrl;
-
-  // static String get hostUrl => mainHostUrl;
+  // TEMP: pointed at production at your request (the ngrok dev tunnel keeps
+  // going offline). Ask before reverting to the kDebugMode ternary.
+  static String get hostUrl => mainHostUrl;
 
   static String get baseApiUrl => '$hostUrl/api/';
 

@@ -8,17 +8,73 @@ import 'package:ai_teacher/ui/chat/widget/activity_date_separator.dart';
 import 'package:ai_teacher/ui/chat/widget/activity_item_view.dart';
 import 'package:ai_teacher/ui/chat/widget/chat_compose_area.dart';
 import 'package:ai_teacher/ui/chat/widget/chat_header.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// Must match the backend's accepted set exactly: any image/*, plus
+// application/pdf, .doc, .docx, .xls, .xlsx — anything else is rejected
+// with a 400.
+const _kAttachmentExtensions = [
+  'jpg',
+  'jpeg',
+  'png',
+  'gif',
+  'webp',
+  'heic',
+  'pdf',
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+];
+
+const _kMaxAttachmentBytes = 10 * 1024 * 1024;
+
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _PendingAttachmentBanner extends StatelessWidget {
+  const _PendingAttachmentBanner({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFF1F5F9),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              '$name yuborilmoqda…',
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF475569),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
@@ -80,6 +136,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     FocusScope.of(context).unfocus();
   }
 
+  Future<void> _onAttach() async {
+    if (ref.read(chatRoomControllerProvider).sending) return;
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: _kAttachmentExtensions,
+    );
+    final files = result?.files;
+    final file = (files != null && files.isNotEmpty) ? files.first : null;
+    if (file == null || file.path == null || !mounted) return;
+    if (file.size > _kMaxAttachmentBytes) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Fayl hajmi 10 MB dan oshmasligi kerak'),
+          ),
+        );
+      return;
+    }
+    await ref
+        .read(chatRoomControllerProvider.notifier)
+        .sendAttachment(file.path!, file.name);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -115,7 +195,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 onClose: _onBack,
               ),
               Expanded(child: _buildBody(state, groups, l10n)),
-              ChatComposeArea(controller: _composeController, onSend: _onSend),
+              if (state.pendingAttachmentName != null)
+                _PendingAttachmentBanner(name: state.pendingAttachmentName!),
+              ChatComposeArea(
+                controller: _composeController,
+                onSend: _onSend,
+                onAttach: _onAttach,
+                attachEnabled: !state.sending,
+              ),
             ],
           ),
         ),
@@ -225,6 +312,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       time: _formatTime(msg.sentAt),
       body: msg.text,
       mine: mine,
+      attachmentUrl: msg.fileUrl,
+      attachmentName: msg.fileName,
+      attachmentMimeType: msg.fileType,
     );
   }
 

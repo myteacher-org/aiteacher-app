@@ -9,6 +9,9 @@ class ActivityItem {
     required this.time,
     required this.body,
     this.mine = false,
+    this.attachmentUrl,
+    this.attachmentName,
+    this.attachmentMimeType,
   });
 
   final String authorName;
@@ -18,6 +21,9 @@ class ActivityItem {
   final String time;
   final String body;
   final bool mine;
+  final String? attachmentUrl;
+  final String? attachmentName;
+  final String? attachmentMimeType;
 }
 
 class ActivityGroup {

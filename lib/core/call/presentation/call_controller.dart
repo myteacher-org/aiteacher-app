@@ -5,7 +5,7 @@ import 'package:ai_teacher/core/call/data/call_repository.dart';
 import 'package:ai_teacher/core/call/data/call_socket.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:livekit_client/livekit_client.dart' as lk;
 
 enum CallPhase {
   idle,
@@ -88,9 +88,8 @@ final callControllerProvider = NotifierProvider<CallController, CallState>(
 
 class CallController extends Notifier<CallState> {
   StreamSubscription<CallEvent>? _eventsSub;
-  RTCPeerConnection? _peer;
-  MediaStream? _localStream;
-  MediaStream? _remoteStream;
+  lk.Room? _room;
+  lk.EventsListener<lk.RoomEvent>? _roomListener;
   Timer? _elapsedTimer;
   Timer? _retryTimer;
   DateTime? _activeAt;
@@ -100,19 +99,11 @@ class CallController extends Notifier<CallState> {
 
   static const _retryDelays = [2, 4, 8, 16, 30];
 
-  static const _iceServers = <Map<String, dynamic>>[
-    {'urls': 'stun:stun.l.google.com:19302'},
-  ];
-
   @override
   CallState build() {
     ref.onDispose(_disposeAll);
     return const CallState();
   }
-
-  MediaStream? get localStream => _localStream;
-
-  MediaStream? get remoteStream => _remoteStream;
 
   /// Subscribe to the /call socket so we hear `incoming-call`. Call this once
   /// from a long-lived widget (e.g. the main shell) after the user is signed
@@ -144,7 +135,7 @@ class CallController extends Notifier<CallState> {
     });
   }
 
-  /// Mentor-initiated call. Posts to `/calls`, the server fires
+  /// Caller-initiated call. Posts to `/calls`, the server fires
   /// `incoming-call` to the callee. We move into `outgoing` and wait for
   /// `call-accepted`.
   Future<void> startCall(String assignmentId) async {
@@ -174,9 +165,8 @@ class CallController extends Notifier<CallState> {
     try {
       _isCaller = false;
       state = state.copyWith(phase: CallPhase.connecting, error: null);
-      await _initLocalMedia();
-      await _initPeer();
       await ref.read(callSocketProvider).accept(id);
+      await _connectRoom(id);
     } catch (e) {
       debugPrint('accept failed: $e');
       state = state.copyWith(
@@ -184,7 +174,7 @@ class CallController extends Notifier<CallState> {
         endedReason: 'failed',
         error: 'Qabul qilinmadi',
       );
-      await _closePeer();
+      await _closeRoom();
     }
   }
 
@@ -197,7 +187,7 @@ class CallController extends Notifier<CallState> {
       debugPrint('decline failed: $e');
     }
     state = state.copyWith(phase: CallPhase.ended, endedReason: 'declined');
-    await _closePeer();
+    await _closeRoom();
   }
 
   Future<void> hangup({String reason = 'hangup'}) async {
@@ -211,26 +201,20 @@ class CallController extends Notifier<CallState> {
     }
     state = state.copyWith(phase: CallPhase.ended, endedReason: reason);
     _stopElapsedTimer();
-    await _closePeer();
+    await _closeRoom();
   }
 
   void toggleMute() {
-    final stream = _localStream;
-    if (stream == null) return;
+    final room = _room;
+    if (room?.localParticipant == null) return;
     final next = !state.muted;
-    for (final track in stream.getAudioTracks()) {
-      track.enabled = !next;
-    }
+    room!.localParticipant!.setMicrophoneEnabled(!next);
     state = state.copyWith(muted: next);
   }
 
   void toggleSpeaker() {
-    final stream = _localStream;
     final next = !state.speakerphone;
-    if (stream != null) {
-      // Helper.setSpeakerphoneOn requires the audio session on iOS/Android.
-      Helper.setSpeakerphoneOn(next);
-    }
+    lk.AudioManager.instance.setSpeakerOutputPreferred(next, force: false);
     state = state.copyWith(speakerphone: next);
   }
 
@@ -257,147 +241,61 @@ class CallController extends Notifier<CallState> {
         );
       case CallAcceptedEvent _:
         if (!_isCaller) return;
+        final id = state.callId;
+        if (id == null) return;
         state = state.copyWith(phase: CallPhase.connecting);
-        await _initLocalMedia();
-        await _initPeer();
-        await _sendOffer();
+        await _connectRoom(id);
       case CallDeclinedEvent _:
         state = state.copyWith(phase: CallPhase.ended, endedReason: 'declined');
-        await _closePeer();
+        await _closeRoom();
       case CallEndedEvent e:
         state = state.copyWith(
           phase: CallPhase.ended,
           endedReason: e.reason ?? 'ended',
         );
         _stopElapsedTimer();
-        await _closePeer();
-      case CallOfferEvent e:
-        await _handleRemoteOffer(e.sdp);
-      case CallAnswerEvent e:
-        await _handleRemoteAnswer(e.sdp);
-      case CallIceEvent e:
-        await _handleRemoteIce(e.candidate);
+        await _closeRoom();
     }
   }
 
-  Future<void> _initLocalMedia() async {
-    _localStream ??= await navigator.mediaDevices.getUserMedia({
-      'audio': true,
-      'video': false,
-    });
-  }
+  /// Fetches a LiveKit room token for this call and joins the media room —
+  /// this replaces the old manual RTCPeerConnection offer/answer/ICE dance;
+  /// both parties just connect to the same server-relayed room.
+  Future<void> _connectRoom(String callId) async {
+    final tokenInfo = await ref
+        .read(callRepositoryProvider)
+        .getLiveKitToken(callId);
 
-  Future<void> _initPeer() async {
-    if (_peer != null) return;
-    final peer = await createPeerConnection({
-      'iceServers': _iceServers,
-      'sdpSemantics': 'unified-plan',
-      'encodedInsertableStreams': true,
-    });
-
-    final local = _localStream;
-    if (local != null) {
-      for (final track in local.getTracks()) {
-        await peer.addTrack(track, local);
-      }
-    }
-
-    peer.onIceCandidate = (candidate) {
-      final id = state.callId;
-      if (id == null) return;
-      ref
-          .read(callSocketProvider)
-          .sendIceCandidate(id, {
-            'candidate': candidate.candidate,
-            'sdpMid': candidate.sdpMid,
-            'sdpMLineIndex': candidate.sdpMLineIndex,
-          })
-          .catchError((e) => debugPrint('ice send failed: $e'));
-    };
-
-    peer.onTrack = (event) {
-      if (event.streams.isNotEmpty) {
-        _remoteStream = event.streams.first;
-      }
-    };
-
-    peer.onConnectionState = (s) {
-      debugPrint('peer connection state: $s');
-      switch (s) {
-        case RTCPeerConnectionState.RTCPeerConnectionStateConnected:
-          _activeAt ??= DateTime.now();
-          _startElapsedTimer();
-          state = state.copyWith(phase: CallPhase.active);
-        case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
-          state = state.copyWith(phase: CallPhase.reconnecting);
-        case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
-          state = state.copyWith(phase: CallPhase.ended, endedReason: 'failed');
+    final room = lk.Room();
+    _room = room;
+    _roomListener = room.createListener()
+      ..on<lk.RoomDisconnectedEvent>((e) {
+        debugPrint('livekit room disconnected: ${e.reason}');
+        if (state.phase != CallPhase.ended) {
+          state = state.copyWith(
+            phase: CallPhase.ended,
+            endedReason: 'connection_lost',
+          );
           _stopElapsedTimer();
-        case RTCPeerConnectionState.RTCPeerConnectionStateClosed:
-          break;
-        default:
-          break;
-      }
-    };
+        }
+      })
+      ..on<lk.RoomReconnectingEvent>((_) {
+        if (state.phase == CallPhase.active) {
+          state = state.copyWith(phase: CallPhase.reconnecting);
+        }
+      })
+      ..on<lk.RoomReconnectedEvent>((_) {
+        if (state.phase == CallPhase.reconnecting) {
+          state = state.copyWith(phase: CallPhase.active);
+        }
+      });
 
-    _peer = peer;
-  }
+    await room.connect(tokenInfo.url, tokenInfo.token);
+    await room.localParticipant?.setMicrophoneEnabled(true);
 
-  Future<void> _sendOffer() async {
-    final peer = _peer;
-    final id = state.callId;
-    if (peer == null || id == null) return;
-    final offer = await peer.createOffer({
-      'offerToReceiveAudio': true,
-      'offerToReceiveVideo': false,
-    });
-    await peer.setLocalDescription(offer);
-    await ref.read(callSocketProvider).sendOffer(id, {
-      'type': offer.type,
-      'sdp': offer.sdp,
-    });
-  }
-
-  Future<void> _handleRemoteOffer(Map<String, dynamic> sdp) async {
-    await _initLocalMedia();
-    await _initPeer();
-    final peer = _peer!;
-    final id = state.callId;
-    if (id == null) return;
-    await peer.setRemoteDescription(
-      RTCSessionDescription(sdp['sdp'] as String?, sdp['type'] as String?),
-    );
-    final answer = await peer.createAnswer({});
-    await peer.setLocalDescription(answer);
-    await ref.read(callSocketProvider).sendAnswer(id, {
-      'type': answer.type,
-      'sdp': answer.sdp,
-    });
-  }
-
-  Future<void> _handleRemoteAnswer(Map<String, dynamic> sdp) async {
-    final peer = _peer;
-    if (peer == null) return;
-    await peer.setRemoteDescription(
-      RTCSessionDescription(sdp['sdp'] as String?, sdp['type'] as String?),
-    );
-  }
-
-  Future<void> _handleRemoteIce(Map<String, dynamic> candidate) async {
-    final peer = _peer;
-    if (peer == null) return;
-    final cand = RTCIceCandidate(
-      candidate['candidate'] as String?,
-      candidate['sdpMid'] as String?,
-      candidate['sdpMLineIndex'] is int
-          ? candidate['sdpMLineIndex'] as int
-          : null,
-    );
-    try {
-      await peer.addCandidate(cand);
-    } catch (e) {
-      debugPrint('addCandidate failed: $e');
-    }
+    _activeAt ??= DateTime.now();
+    _startElapsedTimer();
+    state = state.copyWith(phase: CallPhase.active);
   }
 
   void _startElapsedTimer() {
@@ -413,20 +311,14 @@ class CallController extends Notifier<CallState> {
     _elapsedTimer = null;
   }
 
-  Future<void> _closePeer() async {
+  Future<void> _closeRoom() async {
     _stopElapsedTimer();
+    _roomListener?.cancelAll();
+    _roomListener = null;
     try {
-      await _peer?.close();
+      await _room?.disconnect();
     } catch (_) {}
-    _peer = null;
-    try {
-      for (final track in _localStream?.getTracks() ?? <MediaStreamTrack>[]) {
-        await track.stop();
-      }
-      await _localStream?.dispose();
-    } catch (_) {}
-    _localStream = null;
-    _remoteStream = null;
+    _room = null;
     _activeAt = null;
     _isCaller = false;
   }
@@ -437,7 +329,7 @@ class CallController extends Notifier<CallState> {
     _eventsSub?.cancel();
     _eventsSub = null;
     _stopElapsedTimer();
-    _peer?.close();
-    _localStream?.dispose();
+    _roomListener?.cancelAll();
+    _room?.disconnect();
   }
 }
