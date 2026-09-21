@@ -119,6 +119,17 @@ class CacheService {
   Future<void> setLastStreakSheetShownAt(DateTime time) =>
       _prefs.setString(_streakSheetShownAtKey, time.toIso8601String());
 
+  static const String _streakCheckInDateKey = 'streak_check_in_date';
+
+  /// The calendar date (`yyyy-MM-dd`, device-local) the daily streak
+  /// check-in last succeeded on — lets the client skip calling the
+  /// check-in endpoint again on a later app open the same day, instead of
+  /// relying entirely on the backend to dedupe repeated hits.
+  String? get lastStreakCheckInDate => _prefs.getString(_streakCheckInDateKey);
+
+  Future<void> setLastStreakCheckInDate(String date) =>
+      _prefs.setString(_streakCheckInDateKey, date);
+
   static const String _shownPromoIdsKey = 'shown_promo_ids';
 
   Set<String> get shownPromoIds =>
