@@ -8,9 +8,9 @@ const _battleRed = Color(0xFFDC2626);
 const _battleOrange = Color(0xFFF97316);
 const _slate = Color(0xFF0F172A);
 const _muted = Color(0xFF64748B);
-const _gold = Color(0xFFF2C765);
-const _silver = Color(0xFFD7DEE8);
-const _bronze = Color(0xFFE7A47E);
+const _gold = Color(0xFFF5B700);
+const _silver = Color(0xFF6C8792);
+const _bronze = Color(0xFFC97845);
 
 class BattleGameOverView extends StatefulWidget {
   const BattleGameOverView({
@@ -55,11 +55,13 @@ class _BattleGameOverViewState extends State<BattleGameOverView>
     super.dispose();
   }
 
-  String? _avatar(ScoreboardEntry e) => (e.avatar?.trim().isNotEmpty ?? false)
-      ? e.avatar
-      : e.userId == widget.state.myUserId
-      ? widget.myAvatarPath
-      : null;
+  String? _avatar(ScoreboardEntry e) {
+    final cached = widget.myAvatarPath?.trim();
+    if (e.userId == widget.state.myUserId && cached?.isNotEmpty == true) {
+      return cached;
+    }
+    return e.avatar?.trim().isNotEmpty == true ? e.avatar!.trim() : null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,42 +154,31 @@ class _BattleGameOverViewState extends State<BattleGameOverView>
                       Container(
                         key: const ValueKey('podium-panel'),
                         clipBehavior: Clip.antiAlias,
-                        padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+                        padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(color: AppColors.border),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: .05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
+                              color: AppColors.navy.withValues(alpha: .08),
+                              blurRadius: 22,
+                              offset: const Offset(0, 8),
                             ),
                           ],
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.workspace_premium_outlined,
-                                  size: 16,
-                                  color: _battleRed,
-                                ),
-                                const SizedBox(width: 7),
-                                Expanded(
-                                  child: Text(
-                                    l.battleResultStandings,
-                                    style: const TextStyle(
-                                      color: _muted,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              l.battleResultStandings,
+                              style: const TextStyle(
+                                color: AppColors.navy,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 14),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -224,12 +215,12 @@ class _BattleGameOverViewState extends State<BattleGameOverView>
                                                     widget.state.myUserId,
                                                 stepHeight:
                                                     (ordered[i].rank == 1
-                                                        ? 126
+                                                        ? 118
                                                         : ordered[i].rank == 2
-                                                        ? 100
-                                                        : 78) +
+                                                        ? 107
+                                                        : 93) +
                                                     (scale > 1
-                                                        ? (scale - 1) * 48
+                                                        ? (scale - 1) * 56
                                                         : 0),
                                                 avatarScale: .92 + .08 * eased,
                                                 joined: ordered.length == 3,
@@ -246,17 +237,17 @@ class _BattleGameOverViewState extends State<BattleGameOverView>
                                 ],
                               ],
                             ),
-                            if (entries.length > 3) ...[
-                              const SizedBox(height: 12),
-                              _RunnersUpSection(
-                                entries: entries.skip(3).toList(),
-                                myUserId: widget.state.myUserId,
-                                avatarFor: _avatar,
-                              ),
-                            ],
                           ],
                         ),
                       ),
+                    if (entries.length > 3) ...[
+                      const SizedBox(height: 12),
+                      _RunnersUpSection(
+                        entries: entries.skip(3).toList(),
+                        myUserId: widget.state.myUserId,
+                        avatarFor: _avatar,
+                      ),
+                    ],
                     if (mine != null && mine.answers.isNotEmpty) ...[
                       const SizedBox(height: 12),
                       Material(
@@ -400,90 +391,137 @@ class _PodiumPlayer extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final win = entry.rank == 1;
     final stepBackground = win
-        ? const [AppColors.primaryLight, AppColors.primaryDark]
+        ? AppColors.primary
         : entry.rank == 2
-        ? const [Color(0xFFF8FAFC), Color(0xFFE2E8F0)]
-        : const [Color(0xFFFFF7ED), Color(0xFFFFE4CC)];
-    final stepBorder = win
-        ? const Color(0xFFE6A800)
+        ? const Color(0xFFDCE9EC)
+        : const Color(0xFFF2E7DE);
+    final badgeColor = win
+        ? AppColors.accent
         : entry.rank == 2
-        ? const Color(0xFFCBD5E1)
-        : const Color(0xFFF2A56B);
+        ? _silver
+        : _bronze;
+    final avatarSize = win ? 64.0 : 56.0;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (win) ...[const _WinnerCrown(), const SizedBox(height: 4)],
         Transform.scale(
           scale: avatarScale,
-          child: _Avatar(entry: entry, path: avatar, size: 56),
+          child: _Avatar(entry: entry, path: avatar, size: avatarSize),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: win ? 6 : 7),
         Tooltip(
           message: entry.firstName,
           child: Text(
             entry.firstName,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: _slate,
               fontWeight: FontWeight.w700,
-              fontSize: 13,
-              height: 1.3,
+              fontSize: 12,
+              height: 1.5,
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 10),
-          child: Text(
-            isMe ? l.battleYou : ' ',
-            style: const TextStyle(
-              color: AppColors.primaryDark,
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 24,
+          width: double.infinity,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 32,
+                  height: 24,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: badgeColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${entry.rank}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                if (isMe) ...[
+                  const SizedBox(width: 4),
+                  Container(
+                    height: 22,
+                    padding: const EdgeInsets.symmetric(horizontal: 7),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySubtle,
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Text(
+                      l.battleYou,
+                      style: const TextStyle(
+                        color: AppColors.primaryDark,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
+        SizedBox(height: win ? 4 : 7),
         Container(
           width: double.infinity,
-          constraints: BoxConstraints(minHeight: stepHeight),
+          height: stepHeight,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: stepBackground,
-            ),
+            color: stepBackground,
             borderRadius: joined
                 ? BorderRadius.only(
-                    topLeft: const Radius.circular(12),
-                    topRight: const Radius.circular(12),
+                    topLeft: const Radius.circular(16),
+                    topRight: const Radius.circular(16),
                     bottomLeft: isLeft
-                        ? const Radius.circular(12)
+                        ? const Radius.circular(16)
                         : Radius.zero,
                     bottomRight: isRight
-                        ? const Radius.circular(12)
+                        ? const Radius.circular(16)
                         : Radius.zero,
                   )
-                : BorderRadius.circular(12),
-            border: Border.all(color: stepBorder, width: win ? 2 : 1),
+                : BorderRadius.circular(16),
+            border: win
+                ? const Border(
+                    top: BorderSide(color: AppColors.accent, width: 4),
+                  )
+                : null,
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '${entry.score}',
+                maxLines: 1,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: win ? Colors.white : _slate,
-                  fontSize: 27,
+                  fontSize: 22,
                   fontWeight: FontWeight.w900,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 l.battleResultPoints,
+                maxLines: 1,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: win ? Colors.white.withValues(alpha: .82) : _muted,
+                  color: win ? Colors.white.withValues(alpha: .72) : _muted,
                   fontSize: 11,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -492,6 +530,56 @@ class _PodiumPlayer extends StatelessWidget {
       ],
     );
   }
+}
+
+class _WinnerCrown extends StatelessWidget {
+  const _WinnerCrown();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 34,
+      height: 24,
+      child: CustomPaint(painter: _CrownPainter()),
+    );
+  }
+}
+
+class _CrownPainter extends CustomPainter {
+  const _CrownPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final fill = Paint()
+      ..color = AppColors.accent
+      ..style = PaintingStyle.fill;
+    final stroke = Paint()
+      ..color = AppColors.accentDark
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeJoin = StrokeJoin.round;
+    final crown = Path()
+      ..moveTo(4, 18)
+      ..lineTo(2, 6)
+      ..lineTo(10, 12)
+      ..lineTo(17, 3)
+      ..lineTo(24, 12)
+      ..lineTo(32, 6)
+      ..lineTo(30, 18)
+      ..close();
+    canvas
+      ..drawPath(crown, fill)
+      ..drawPath(crown, stroke)
+      ..drawLine(const Offset(5, 22), const Offset(29, 22), stroke);
+    final jewel = Paint()..color = const Color(0xFFFFD65A);
+    canvas
+      ..drawCircle(const Offset(2, 5), 2, jewel)
+      ..drawCircle(const Offset(17, 2), 2, jewel)
+      ..drawCircle(const Offset(32, 5), 2, jewel);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _RunnersUpSection extends StatelessWidget {
@@ -510,10 +598,10 @@ class _RunnersUpSection extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
       decoration: BoxDecoration(
-        color: AppColors.tintSlate,
-        borderRadius: BorderRadius.circular(14),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -522,43 +610,28 @@ class _RunnersUpSection extends StatelessWidget {
           Text(
             l.battleResultRunnersUp,
             style: const TextStyle(
-              color: _slate,
-              fontSize: 13,
+              color: AppColors.navy,
+              fontSize: 17,
               fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 8),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 310 ? 2 : 1;
-              final width = columns == 2
-                  ? (constraints.maxWidth - 8) / 2
-                  : constraints.maxWidth;
-              return Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final entry in entries)
-                    SizedBox(
-                      width: width,
-                      child: _RunnerChip(
-                        entry: entry,
-                        avatar: avatarFor(entry),
-                        isMe: entry.userId == myUserId,
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
+          for (var i = 0; i < entries.length; i++) ...[
+            _RunnerRow(
+              entry: entries[i],
+              avatar: avatarFor(entries[i]),
+              isMe: entries[i].userId == myUserId,
+            ),
+            if (i != entries.length - 1) const SizedBox(height: 8),
+          ],
         ],
       ),
     );
   }
 }
 
-class _RunnerChip extends StatelessWidget {
-  const _RunnerChip({
+class _RunnerRow extends StatelessWidget {
+  const _RunnerRow({
     required this.entry,
     required this.avatar,
     required this.isMe,
@@ -572,73 +645,75 @@ class _RunnerChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return Container(
-      constraints: const BoxConstraints(minHeight: 54),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      constraints: const BoxConstraints(minHeight: 58),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
       decoration: BoxDecoration(
-        color: isMe ? AppColors.primarySubtle : AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        color: isMe ? AppColors.primarySubtle : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isMe
-              ? AppColors.primary.withValues(alpha: .3)
-              : AppColors.border,
+          color: isMe ? const Color(0xFF99F6E4) : Colors.transparent,
         ),
       ),
       child: Row(
         children: [
-          Container(
-            width: 24,
-            height: 24,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.surface,
-              border: Border.all(color: AppColors.borderStrong),
-            ),
+          SizedBox(
+            width: 22,
             child: Text(
               '${entry.rank}',
-              style: const TextStyle(
-                color: _muted,
-                fontSize: 11,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isMe ? AppColors.primary : _muted,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ),
-          const SizedBox(width: 6),
-          _Avatar(entry: entry, path: avatar, size: 28, badge: false),
-          const SizedBox(width: 7),
+          const SizedBox(width: 8),
+          _Avatar(entry: entry, path: avatar, size: 38),
+          const SizedBox(width: 8),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  entry.firstName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: _slate,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Text(
+                    entry.firstName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: _slate,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (isMe)
-                  Text(
-                    l.battleYou,
-                    style: const TextStyle(
-                      color: AppColors.primaryDark,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
+                  Container(
+                    height: 22,
+                    margin: const EdgeInsets.only(left: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFCCFBF1),
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Text(
+                      l.battleYou,
+                      style: const TextStyle(
+                        color: AppColors.primaryDark,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
               ],
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
           Text(
             '${entry.score}',
-            style: const TextStyle(
-              color: _slate,
-              fontSize: 14,
+            style: TextStyle(
+              color: isMe ? AppColors.primaryDark : _slate,
+              fontSize: 13,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -649,81 +724,76 @@ class _RunnerChip extends StatelessWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({
-    required this.entry,
-    required this.path,
-    required this.size,
-    this.badge = true,
-  });
+  const _Avatar({required this.entry, required this.path, required this.size});
   final ScoreboardEntry entry;
   final String? path;
   final double size;
-  final bool badge;
   @override
   Widget build(BuildContext context) {
     final ring = entry.rank == 1
         ? _gold
         : entry.rank == 2
-        ? _silver
-        : _bronze;
+        ? Colors.white
+        : entry.rank == 3
+        ? Colors.white
+        : Colors.transparent;
+    final background = entry.rank == 1
+        ? const Color(0xFF164E63)
+        : entry.rank == 2
+        ? const Color(0xFF3D7F92)
+        : entry.rank == 3
+        ? _bronze
+        : _runnerAvatarColor(entry.userId);
     final fallback = Center(
       child: Text(
         entry.firstName.trim().isEmpty
             ? '?'
             : entry.firstName.trim().characters.first.toUpperCase(),
         style: TextStyle(
-          color: _slate,
+          color: Colors.white,
           fontSize: size * .36,
           fontWeight: FontWeight.w800,
         ),
       ),
     );
-    return SizedBox(
-      width: size + 4,
-      height: size + (badge ? 6 : 0),
-      child: Stack(
-        children: [
-          Container(
-            width: size,
-            height: size,
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: ring),
-            child: ClipOval(
-              child: ColoredBox(
-                color: AppColors.tintSlate,
-                child: path == null || path!.trim().isEmpty
-                    ? fallback
-                    : Image.network(
-                        NetworkConfig.resolveStatic(path!),
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => fallback,
-                      ),
-              ),
-            ),
+    return Container(
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(entry.rank == 1 ? 4 : 3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: ring,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: .12),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          if (badge)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: ring,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.surface, width: 2),
-                ),
-                child: Text(
-                  '${entry.rank}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: _slate,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-            ),
         ],
+      ),
+      child: ClipOval(
+        child: ColoredBox(
+          color: background,
+          child: path == null || path!.trim().isEmpty
+              ? fallback
+              : Image.network(
+                  NetworkConfig.resolveStatic(path!),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => fallback,
+                ),
+        ),
       ),
     );
   }
+}
+
+Color _runnerAvatarColor(String seed) {
+  const colors = [
+    Color(0xFF7C3AED),
+    Color(0xFF2563EB),
+    AppColors.primary,
+    Color(0xFFDB2777),
+    Color(0xFFEA580C),
+  ];
+  return colors[seed.hashCode.abs() % colors.length];
 }

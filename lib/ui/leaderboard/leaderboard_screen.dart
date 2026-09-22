@@ -3,6 +3,7 @@ import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/leaderboard/data/leaderboard_entry.dart';
 import 'package:ai_teacher/core/leaderboard/data/leaderboard_not_ranked_exception.dart';
 import 'package:ai_teacher/core/leaderboard/presentation/leaderboard_controller.dart';
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/leaderboard/widget/leaderboard_not_ranked_view.dart';
 import 'package:ai_teacher/ui/leaderboard/widget/leaderboard_podium.dart';
@@ -25,6 +26,7 @@ class LeaderboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(leaderboardProvider);
+    final currentUser = ref.watch(currentUserProvider).valueOrNull;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -42,7 +44,11 @@ class LeaderboardScreen extends ConsumerWidget {
                     : _ErrorState(
                         onRetry: () => ref.invalidate(leaderboardProvider),
                       ),
-                data: (entries) => _LeaderboardBody(entries: entries),
+                data: (entries) => _LeaderboardBody(
+                  entries: entries,
+                  myUserId: currentUser?.id,
+                  myAvatarPath: currentUser?.avatar,
+                ),
               ),
             ),
           ],
@@ -101,9 +107,15 @@ class _TopBar extends StatelessWidget {
 }
 
 class _LeaderboardBody extends StatefulWidget {
-  const _LeaderboardBody({required this.entries});
+  const _LeaderboardBody({
+    required this.entries,
+    this.myUserId,
+    this.myAvatarPath,
+  });
 
   final List<LeaderboardEntry> entries;
+  final String? myUserId;
+  final String? myAvatarPath;
 
   @override
   State<_LeaderboardBody> createState() => _LeaderboardBodyState();
@@ -131,7 +143,27 @@ class _LeaderboardBodyState extends State<_LeaderboardBody>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final entries = widget.entries;
+    final cachedAvatar = widget.myAvatarPath?.trim();
+    final entries = widget.entries
+        .map((entry) {
+          final isMe =
+              entry.isMe ||
+              (widget.myUserId?.isNotEmpty == true &&
+                  entry.userId == widget.myUserId);
+          if (!isMe) return entry;
+          return LeaderboardEntry(
+            userId: entry.userId,
+            fullName: entry.fullName,
+            avatarUrl: isMe && cachedAvatar?.isNotEmpty == true
+                ? cachedAvatar
+                : entry.avatarUrl,
+            score: entry.score,
+            rank: entry.rank,
+            streakDays: entry.streakDays,
+            isMe: isMe,
+          );
+        })
+        .toList(growable: false);
     final sorted = [...entries]..sort((a, b) => a.rank.compareTo(b.rank));
     final podium = sorted.where((e) => e.rank <= 3).toList(growable: false);
     final rows = sorted.where((e) => e.rank > 3).toList(growable: false);

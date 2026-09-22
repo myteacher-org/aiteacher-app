@@ -18,10 +18,11 @@ class LeaderboardEntry {
   final bool isMe;
 
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) {
+    final avatar = json['avatarUrl'] ?? json['avatar'];
     return LeaderboardEntry(
       userId: json['userId'] as String? ?? '',
       fullName: json['fullName'] as String? ?? '',
-      avatarUrl: json['avatarUrl'] as String?,
+      avatarUrl: avatar as String?,
       score: (json['score'] as num?)?.toInt() ?? 0,
       rank: (json['rank'] as num?)?.toInt() ?? 0,
       streakDays: (json['streakDays'] as num?)?.toInt() ?? 0,
