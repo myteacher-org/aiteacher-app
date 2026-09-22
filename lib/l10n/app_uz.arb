@@ -1,4 +1,18 @@
 {
+  "battleResultWellPlayed": "Yaxshi o‘ynadingiz!",
+  "battleResultStandings": "Yakuniy natijalar",
+  "battleResultRunnersUp": "Boshqa ishtirokchilar",
+  "battleResultPoints": "ball",
+  "battleResultSeconds": "{seconds}s",
+  "battlePreviewTitle": "Natijalar namoyishi · namunaviy ma’lumot",
+  "battlePreviewPlayers": "O‘yinchilar",
+  "battlePreviewPlace": "O‘rningiz",
+  "battlePreviewReplay": "Animatsiyani takrorlash",
+  "battlePreviewTies": "Teng o‘rinlar",
+  "battlePreviewLarge": "Katta matn",
+  "battlePreviewMotion": "Kamroq harakat",
+  "battlePreviewLong": "Uzun ismlar",
+  "@battleResultSeconds": {"placeholders": {"seconds": {"type": "String"}}},
   "@@locale": "uz",
 
   "commonOk": "OK",

@@ -1,4 +1,18 @@
 {
+  "battleResultWellPlayed": "Well played!",
+  "battleResultStandings": "Final standings",
+  "battleResultRunnersUp": "Runners-up",
+  "battleResultPoints": "points",
+  "battleResultSeconds": "{seconds}s",
+  "battlePreviewTitle": "Results preview · sample data",
+  "battlePreviewPlayers": "Players",
+  "battlePreviewPlace": "Your position",
+  "battlePreviewReplay": "Replay animation",
+  "battlePreviewTies": "Tied ranks",
+  "battlePreviewLarge": "Large text",
+  "battlePreviewMotion": "Reduce motion",
+  "battlePreviewLong": "Long names",
+  "@battleResultSeconds": {"placeholders": {"seconds": {"type": "String"}}},
   "@@locale": "en",
 
   "commonOk": "OK",

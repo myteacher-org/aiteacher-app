@@ -162,11 +162,13 @@ class ScoreboardEntry {
     required this.score,
     required this.sumDelayMs,
     required this.answers,
+    this.avatar,
   });
 
   final int rank;
   final String userId;
   final String firstName;
+  final String? avatar;
   final int score;
   final int sumDelayMs;
   final List<BattleRoundAnswer> answers;
@@ -177,6 +179,7 @@ class ScoreboardEntry {
       rank: (json['rank'] as num?)?.toInt() ?? 0,
       userId: json['userId'] as String? ?? '',
       firstName: json['firstName'] as String? ?? '',
+      avatar: json['avatar'] as String?,
       score: (json['score'] as num?)?.toInt() ?? 0,
       sumDelayMs: (json['sumDelayMs'] as num?)?.toInt() ?? 0,
       answers: rawAnswers
