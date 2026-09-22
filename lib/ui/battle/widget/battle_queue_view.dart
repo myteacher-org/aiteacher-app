@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:ai_teacher/core/battle/data/battle_dtos.dart';
+import 'package:ai_teacher/core/battle/data/battle_reaction_codes.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
+import 'package:ai_teacher/ui/battle/widget/battle_reaction_bar.dart';
 import 'package:flutter/material.dart';
 
 class BattleQueueView extends StatefulWidget {
@@ -7,15 +11,31 @@ class BattleQueueView extends StatefulWidget {
     super.key,
     required this.lobbyPlayers,
     required this.onCancel,
+    required this.onReact,
+    required this.reactions,
+    this.myUserId,
     this.lobbyTick,
   });
 
   final List<LobbyPlayer> lobbyPlayers;
   final VoidCallback onCancel;
+
+  /// Sends a reaction code to the rest of the lobby while waiting.
+  final void Function(String code) onReact;
+  final Stream<PlayerReaction> reactions;
+  final String? myUserId;
   final int? lobbyTick;
 
   @override
   State<BattleQueueView> createState() => _BattleQueueViewState();
+}
+
+class _QueueReaction {
+  _QueueReaction({required this.id, required this.userId, required this.code});
+
+  final int id;
+  final String userId;
+  final String code;
 }
 
 class _BattleQueueViewState extends State<BattleQueueView>
@@ -25,10 +45,43 @@ class _BattleQueueViewState extends State<BattleQueueView>
     duration: const Duration(milliseconds: 1100),
   )..repeat(reverse: true);
 
+  final List<_QueueReaction> _activeReactions = [];
+  late final StreamSubscription<PlayerReaction> _reactionSub;
+  int _nextId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _reactionSub = widget.reactions.listen((r) {
+      _addReaction(userId: r.userId, code: r.emoji);
+    });
+  }
+
   @override
   void dispose() {
     _pulse.dispose();
+    _reactionSub.cancel();
     super.dispose();
+  }
+
+  void _addReaction({required String userId, required String code}) {
+    if (!mounted) return;
+    final id = _nextId++;
+    setState(
+      () => _activeReactions.add(
+        _QueueReaction(id: id, userId: userId, code: code),
+      ),
+    );
+    Timer(const Duration(milliseconds: 1600), () {
+      if (!mounted) return;
+      setState(() => _activeReactions.removeWhere((r) => r.id == id));
+    });
+  }
+
+  void _handleReact(String code) {
+    widget.onReact(code);
+    final myUserId = widget.myUserId;
+    if (myUserId != null) _addReaction(userId: myUserId, code: code);
   }
 
   @override
@@ -109,9 +162,15 @@ class _BattleQueueViewState extends State<BattleQueueView>
               ],
             ],
           ),
-          const SizedBox(height: 28),
-          _PlayerSlots(players: widget.lobbyPlayers, maxPlayers: max),
-          const SizedBox(height: 40),
+          const SizedBox(height: 36),
+          _PlayerSlots(
+            players: widget.lobbyPlayers,
+            maxPlayers: max,
+            activeReactions: _activeReactions,
+          ),
+          const SizedBox(height: 32),
+          BattleReactionBar(onReact: _handleReact),
+          const SizedBox(height: 16),
           TextButton(
             onPressed: widget.onCancel,
             child: Text(
@@ -129,10 +188,15 @@ class _BattleQueueViewState extends State<BattleQueueView>
 }
 
 class _PlayerSlots extends StatelessWidget {
-  const _PlayerSlots({required this.players, required this.maxPlayers});
+  const _PlayerSlots({
+    required this.players,
+    required this.maxPlayers,
+    required this.activeReactions,
+  });
 
   final List<LobbyPlayer> players;
   final int maxPlayers;
+  final List<_QueueReaction> activeReactions;
 
   @override
   Widget build(BuildContext context) {
@@ -140,43 +204,63 @@ class _PlayerSlots extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(maxPlayers, (i) {
         final filled = i < players.length;
+        final reaction = filled
+            ? activeReactions.lastWhereOrNull(
+                (r) => r.userId == players[i].userId,
+              )
+            : null;
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Column(
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: filled
-                      ? const Color(0xFFDC2626).withValues(alpha: 0.12)
-                      : const Color(0xFFF1F5F9),
-                  border: Border.all(
-                    color: filled
-                        ? const Color(0xFFDC2626)
-                        : const Color(0xFFE2E8F0),
-                    width: 2,
-                  ),
-                ),
+              Stack(
+                clipBehavior: Clip.none,
                 alignment: Alignment.center,
-                child: filled
-                    ? Text(
-                        players[i].firstName.isNotEmpty
-                            ? players[i].firstName[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          color: Color(0xFFDC2626),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.person_outline_rounded,
-                        color: Color(0xFFCBD5E1),
-                        size: 22,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: filled
+                          ? const Color(0xFFDC2626).withValues(alpha: 0.12)
+                          : const Color(0xFFF1F5F9),
+                      border: Border.all(
+                        color: filled
+                            ? const Color(0xFFDC2626)
+                            : const Color(0xFFE2E8F0),
+                        width: 2,
                       ),
+                    ),
+                    alignment: Alignment.center,
+                    child: filled
+                        ? Text(
+                            players[i].firstName.isNotEmpty
+                                ? players[i].firstName[0].toUpperCase()
+                                : '?',
+                            style: const TextStyle(
+                              color: Color(0xFFDC2626),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.person_outline_rounded,
+                            color: Color(0xFFCBD5E1),
+                            size: 22,
+                          ),
+                  ),
+                  if (reaction != null)
+                    Positioned(
+                      top: -46,
+                      child: _ReactionBubble(
+                        key: ValueKey(reaction.id),
+                        code: reaction.code,
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 6),
               SizedBox(
@@ -200,5 +284,62 @@ class _PlayerSlots extends StatelessWidget {
         );
       }),
     );
+  }
+}
+
+class _ReactionBubble extends StatelessWidget {
+  const _ReactionBubble({super.key, required this.code});
+
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: 1),
+        duration: const Duration(milliseconds: 1600),
+        curve: Curves.easeOut,
+        builder: (context, t, child) {
+          final opacity = t < 0.75 ? 1.0 : (1 - (t - 0.75) / 0.25).clamp(0.0, 1.0);
+          final pop = t < 0.15 ? (t / 0.15) : 1.0;
+          return Opacity(
+            opacity: opacity,
+            child: Transform.translate(
+              offset: Offset(0, -14 * t),
+              child: Transform.scale(scale: 0.4 + pop * 0.8, child: child),
+            ),
+          );
+        },
+        child: Container(
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Text(
+            battleReactionEmojiFor(code),
+            style: const TextStyle(fontSize: 26),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+extension _LastWhereOrNull<T> on List<T> {
+  T? lastWhereOrNull(bool Function(T) test) {
+    for (var i = length - 1; i >= 0; i--) {
+      if (test(this[i])) return this[i];
+    }
+    return null;
   }
 }

@@ -124,6 +124,16 @@ class BattleController extends AutoDisposeNotifier<BattleState> {
         .submitAnswer(lobbyId: lobbyId, optionIndex: optionIndex);
   }
 
+  /// Live reactions from either player, forwarded straight from the socket.
+  Stream<PlayerReaction> get reactions =>
+      ref.read(battleSocketProvider).onPlayerReaction;
+
+  void sendReaction(String emoji) {
+    final lobbyId = state.lobbyId;
+    if (lobbyId == null) return;
+    ref.read(battleSocketProvider).sendReaction(lobbyId: lobbyId, emoji: emoji);
+  }
+
   void reset() {
     state = BattleState.initial;
   }
