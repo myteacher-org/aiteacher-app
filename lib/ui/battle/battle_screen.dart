@@ -107,6 +107,9 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                         lobbyPlayers: state.lobbyPlayers,
                         lobbyTick: state.lobbyTick,
                         onCancel: notifier.leaveQueue,
+                        onReact: notifier.sendReaction,
+                        reactions: notifier.reactions,
+                        myUserId: state.myUserId,
                       ),
                       BattlePhase.playing => BattlePlayingView(
                         key: ValueKey('playing-${state.currentRound}'),

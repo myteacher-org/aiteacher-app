@@ -232,6 +232,21 @@ class PlayerAnsweredPayload {
 }
 
 @immutable
+class PlayerReaction {
+  const PlayerReaction({required this.userId, required this.emoji});
+
+  final String userId;
+  final String emoji;
+
+  factory PlayerReaction.fromJson(Map<String, dynamic> json) {
+    return PlayerReaction(
+      userId: json['userId'] as String? ?? '',
+      emoji: json['emoji'] as String? ?? '',
+    );
+  }
+}
+
+@immutable
 class RoundStanding {
   const RoundStanding({
     required this.rank,
