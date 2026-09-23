@@ -1,10 +1,9 @@
 class NetworkConfig {
+  static const String localHostUrl = 'http://localhost:8000';
   static const String devHostUrl =
       'https://28d4-37-110-214-131.ngrok-free.app';
   static const String mainHostUrl = 'https://ai.myteacher.uz';
 
-  // TEMP: pointed at production at your request (the ngrok dev tunnel keeps
-  // going offline). Ask before reverting to the kDebugMode ternary.
   static String get hostUrl => mainHostUrl;
 
   static String get baseApiUrl => '$hostUrl/api/';

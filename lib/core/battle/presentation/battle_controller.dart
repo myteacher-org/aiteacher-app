@@ -33,9 +33,20 @@ class BattleController extends AutoDisposeNotifier<BattleState> {
         );
       }),
       socket.onGameStarting.listen((e) {
+        final previousPlayers = {
+          for (final player in state.lobbyPlayers) player.userId: player,
+        };
         state = state.copyWith(
           phase: BattlePhase.playing,
-          lobbyPlayers: e.players,
+          lobbyPlayers: e.players.map((player) {
+            final previous = previousPlayers[player.userId];
+            return LobbyPlayer(
+              userId: player.userId,
+              firstName: player.firstName,
+              avatar: player.avatar ?? previous?.avatar,
+              score: player.score,
+            );
+          }).toList(),
           totalRounds: e.totalRounds,
         );
       }),
@@ -81,9 +92,24 @@ class BattleController extends AutoDisposeNotifier<BattleState> {
         state = state.copyWith(lobbyPlayers: updatedPlayers, roundEnd: data);
       }),
       socket.onGameOver.listen((scoreboard) {
+        final lobbyAvatars = {
+          for (final player in state.lobbyPlayers) player.userId: player.avatar,
+        };
         state = state.copyWith(
           phase: BattlePhase.gameOver,
-          scoreboard: scoreboard,
+          scoreboard: scoreboard.map((entry) {
+            final avatar = entry.avatar ?? lobbyAvatars[entry.userId];
+            if (avatar == entry.avatar) return entry;
+            return ScoreboardEntry(
+              rank: entry.rank,
+              userId: entry.userId,
+              firstName: entry.firstName,
+              avatar: avatar,
+              score: entry.score,
+              sumDelayMs: entry.sumDelayMs,
+              answers: entry.answers,
+            );
+          }).toList(),
         );
       }),
       socket.onError.listen((msg) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/core/battle/data/battle_dtos.dart';
 import 'package:ai_teacher/core/battle/data/battle_reaction_codes.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
@@ -14,6 +15,7 @@ class BattleQueueView extends StatefulWidget {
     required this.onReact,
     required this.reactions,
     this.myUserId,
+    this.myAvatarPath,
     this.lobbyTick,
   });
 
@@ -24,6 +26,7 @@ class BattleQueueView extends StatefulWidget {
   final void Function(String code) onReact;
   final Stream<PlayerReaction> reactions;
   final String? myUserId;
+  final String? myAvatarPath;
   final int? lobbyTick;
 
   @override
@@ -167,6 +170,8 @@ class _BattleQueueViewState extends State<BattleQueueView>
             players: widget.lobbyPlayers,
             maxPlayers: max,
             activeReactions: _activeReactions,
+            myUserId: widget.myUserId,
+            myAvatarPath: widget.myAvatarPath,
           ),
           const SizedBox(height: 32),
           BattleReactionBar(onReact: _handleReact),
@@ -192,11 +197,15 @@ class _PlayerSlots extends StatelessWidget {
     required this.players,
     required this.maxPlayers,
     required this.activeReactions,
+    this.myUserId,
+    this.myAvatarPath,
   });
 
   final List<LobbyPlayer> players;
   final int maxPlayers;
   final List<_QueueReaction> activeReactions;
+  final String? myUserId;
+  final String? myAvatarPath;
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +218,12 @@ class _PlayerSlots extends StatelessWidget {
                 (r) => r.userId == players[i].userId,
               )
             : null;
+        final player = filled ? players[i] : null;
+        final cachedAvatar = myAvatarPath?.trim();
+        final avatar =
+            player?.userId == myUserId && cachedAvatar?.isNotEmpty == true
+            ? cachedAvatar
+            : player?.avatar;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -222,10 +237,11 @@ class _PlayerSlots extends StatelessWidget {
                     duration: const Duration(milliseconds: 300),
                     width: 52,
                     height: 52,
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: filled
-                          ? const Color(0xFFDC2626).withValues(alpha: 0.12)
+                          ? const Color(0xFFDC2626)
                           : const Color(0xFFF1F5F9),
                       border: Border.all(
                         color: filled
@@ -236,16 +252,7 @@ class _PlayerSlots extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: filled
-                        ? Text(
-                            players[i].firstName.isNotEmpty
-                                ? players[i].firstName[0].toUpperCase()
-                                : '?',
-                            style: const TextStyle(
-                              color: Color(0xFFDC2626),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          )
+                        ? _LobbyAvatar(player: players[i], avatarPath: avatar)
                         : const Icon(
                             Icons.person_outline_rounded,
                             color: Color(0xFFCBD5E1),
@@ -287,6 +294,51 @@ class _PlayerSlots extends StatelessWidget {
   }
 }
 
+class _LobbyAvatar extends StatelessWidget {
+  const _LobbyAvatar({required this.player, this.avatarPath});
+
+  final LobbyPlayer player;
+  final String? avatarPath;
+
+  @override
+  Widget build(BuildContext context) {
+    final path = avatarPath?.trim();
+    final url = path == null || path.isEmpty
+        ? null
+        : NetworkConfig.resolveStatic(path);
+    final fallback = ColoredBox(
+      color: const Color(0xFFFFE8E2),
+      child: Center(
+        child: Text(
+          player.firstName.trim().isNotEmpty
+              ? player.firstName.trim().characters.first.toUpperCase()
+              : '?',
+          style: const TextStyle(
+            color: Color(0xFFDC2626),
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ),
+    );
+
+    return ClipOval(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          fallback,
+          if (url != null)
+            Image.network(
+              url,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => const SizedBox.shrink(),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ReactionBubble extends StatelessWidget {
   const _ReactionBubble({super.key, required this.code});
 
@@ -300,7 +352,9 @@ class _ReactionBubble extends StatelessWidget {
         duration: const Duration(milliseconds: 1600),
         curve: Curves.easeOut,
         builder: (context, t, child) {
-          final opacity = t < 0.75 ? 1.0 : (1 - (t - 0.75) / 0.25).clamp(0.0, 1.0);
+          final opacity = t < 0.75
+              ? 1.0
+              : (1 - (t - 0.75) / 0.25).clamp(0.0, 1.0);
           final pop = t < 0.15 ? (t / 0.15) : 1.0;
           return Opacity(
             opacity: opacity,

@@ -43,6 +43,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(battleControllerProvider);
     final notifier = ref.read(battleControllerProvider.notifier);
+    final currentUser = ref.watch(currentUserProvider).valueOrNull;
 
     ref.listen(battleControllerProvider, (prev, next) {
       final err = next.error;
@@ -110,6 +111,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                         onReact: notifier.sendReaction,
                         reactions: notifier.reactions,
                         myUserId: state.myUserId,
+                        myAvatarPath: currentUser?.avatar,
                       ),
                       BattlePhase.playing => BattlePlayingView(
                         key: ValueKey('playing-${state.currentRound}'),
@@ -119,10 +121,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                       BattlePhase.gameOver => BattleGameOverView(
                         key: const ValueKey('gameover'),
                         state: state,
-                        myAvatarPath: ref
-                            .watch(currentUserProvider)
-                            .valueOrNull
-                            ?.avatar,
+                        myAvatarPath: currentUser?.avatar,
                         onPlayAgain: notifier.joinQueue,
                         onExit: () {
                           notifier.reset();
