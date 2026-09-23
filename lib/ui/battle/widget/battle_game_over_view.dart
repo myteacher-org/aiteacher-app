@@ -363,64 +363,68 @@ class _BattleGameOverViewState extends State<BattleGameOverView>
                           ),
                         ],
                         if (mine != null && mine.answers.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Material(
-                            color: AppColors.surface,
-                            clipBehavior: Clip.antiAlias,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: const BorderSide(color: AppColors.border),
+                          const SizedBox(height: 24),
+                          Text(
+                            l.battleMyAnswersLabel.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                              color: _muted,
                             ),
-                            child: Theme(
-                              data: Theme.of(
-                                context,
-                              ).copyWith(dividerColor: Colors.transparent),
-                              child: ExpansionTile(
-                                tilePadding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                title: Text(
-                                  l.battleMyAnswersLabel,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                    color: _slate,
-                                  ),
-                                ),
+                          ),
+                          const SizedBox(height: 10),
+                          for (final a in mine.answers)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 7),
+                              child: Row(
                                 children: [
-                                  for (final a in mine.answers)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 8,
-                                        horizontal: 4,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            a.correct
-                                                ? Icons.check_circle_rounded
-                                                : Icons.cancel_rounded,
-                                            color: a.correct
-                                                ? AppColors.primary
-                                                : const Color(0xFFBE6877),
-                                            size: 20,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(child: Text(a.word)),
-                                          if (a.delayMs != null)
-                                            Text(
-                                              l.battleResultSeconds(
-                                                (a.delayMs! / 1000)
-                                                    .toStringAsFixed(1),
-                                              ),
-                                            ),
-                                        ],
+                                  Container(
+                                    width: 34,
+                                    height: 34,
+                                    decoration: BoxDecoration(
+                                      color: a.correct
+                                          ? const Color(0xFFF0FFFA)
+                                          : const Color(0xFFFFF2F4),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      a.correct ? Icons.check : Icons.close,
+                                      color: a.correct
+                                          ? AppColors.primary
+                                          : _battleRed,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      a.word,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: _slate,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
+                                  ),
+                                  if (a.delayMs != null) ...[
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l.battleResultSeconds(
+                                        (a.delayMs! / 1000).toStringAsFixed(1),
+                                      ),
+                                      style: const TextStyle(
+                                        color: _muted,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
-                          ),
                         ],
                       ],
                     ),
