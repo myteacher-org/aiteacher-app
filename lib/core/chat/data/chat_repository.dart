@@ -2,6 +2,8 @@ import 'package:ai_teacher/app/data/dio_client.dart';
 import 'package:ai_teacher/core/chat/data/chat_dtos.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   return ChatRepository(ref.watch(dioProvider));
@@ -48,10 +50,23 @@ class ChatRepository {
     String? filePath,
     String? fileName,
   }) async {
+    MultipartFile? attachment;
+    if (filePath != null) {
+      // Infer Content-Type from the display filename rather than the
+      // on-device path: some file providers (notably iOS document-picker
+      // sources) hand back a temp path with no extension, which would
+      // otherwise upload as application/octet-stream regardless of the
+      // file's real type.
+      final mimeType = lookupMimeType(fileName ?? filePath);
+      attachment = await MultipartFile.fromFile(
+        filePath,
+        filename: fileName,
+        contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+      );
+    }
     final form = FormData.fromMap({
       if (text != null && text.isNotEmpty) 'text': text,
-      if (filePath != null)
-        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+      'file': ?attachment,
     });
     final response = await _dio.post<Map<String, dynamic>>(
       'chat/rooms/$roomId/messages',
