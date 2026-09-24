@@ -479,6 +479,7 @@
     "placeholders": { "date": { "type": "String" } }
   },
   "myMentorChatButton": "Chat",
+  "myMentorLiveLessonButton": "Live lesson",
   "coursesMentorBadge": "With mentor",
   "coursesSelectDurationLabel": "Select duration",
   "coursesWhatsIncludedLabel": "What's included",
