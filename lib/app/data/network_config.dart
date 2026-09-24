@@ -4,7 +4,11 @@ class NetworkConfig {
       'https://28d4-37-110-214-131.ngrok-free.app';
   static const String mainHostUrl = 'https://ai.myteacher.uz';
 
-  static String get hostUrl => mainHostUrl;
+  // Keep production as default; local trial-flow tests can opt in explicitly.
+  static String get hostUrl => const String.fromEnvironment(
+    'API_HOST_URL',
+    defaultValue: mainHostUrl,
+  );
 
   static String get baseApiUrl => '$hostUrl/api/';
 
