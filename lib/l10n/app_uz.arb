@@ -479,6 +479,7 @@
     "placeholders": { "date": { "type": "String" } }
   },
   "myMentorChatButton": "Suhbat",
+  "myMentorLiveLessonButton": "Jonli dars",
   "coursesMentorBadge": "Mentor bilan",
   "coursesSelectDurationLabel": "Muddat tanlang",
   "coursesWhatsIncludedLabel": "Nima kiradi",

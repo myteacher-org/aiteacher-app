@@ -1,7 +1,9 @@
 import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
+import 'package:ai_teacher/ui/courses/course_web_screen.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
+import 'package:ai_teacher/core/assignment/data/assignment_repository.dart';
 import 'package:ai_teacher/core/timetable/data/timetable_dtos.dart';
 import 'package:ai_teacher/core/timetable/presentation/timetable_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
@@ -23,6 +25,11 @@ class MyMentorCard extends ConsumerWidget {
     if (myMentor == null) return const SizedBox.shrink();
 
     final mentor = myMentor.mentor;
+    final activeLesson = ref.watch(activeLessonProvider).valueOrNull;
+    final lessonForThisMentor =
+        activeLesson != null &&
+        activeLesson.mentorUserId == mentor.id &&
+        activeLesson.expiresAt.isAfter(DateTime.now());
     final nextLesson = ref.watch(nextUpcomingLessonProvider);
     final name = mentor.fullName.isNotEmpty
         ? mentor.fullName
@@ -219,6 +226,38 @@ class MyMentorCard extends ConsumerWidget {
               ),
             ),
           ),
+          if (lessonForThisMentor) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () async {
+                  // Recheck before opening in case the mentor ended the lesson.
+                  final current = await ref
+                      .read(assignmentRepositoryProvider)
+                      .getActiveLesson()
+                      .catchError((_) => null);
+                  if (!context.mounted) return;
+                  if (current == null ||
+                      current.mentorUserId != mentor.id ||
+                      current.expiresAt.isBefore(DateTime.now())) {
+                    ref.invalidate(activeLessonProvider);
+                    return;
+                  }
+                  await context.pushNamed(
+                    AppRoute.linkWeb.name,
+                    extra: LinkWebArgs(
+                      title: l10n.myMentorLiveLessonButton,
+                      url: current.url,
+                    ),
+                  );
+                  if (context.mounted) ref.invalidate(activeLessonProvider);
+                },
+                icon: const Icon(Icons.videocam_rounded, size: 18),
+                label: Text(l10n.myMentorLiveLessonButton),
+              ),
+            ),
+          ],
         ],
       ),
     );
