@@ -7,6 +7,7 @@ import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/call/presentation/call_controller.dart';
 import 'package:ai_teacher/core/cashback/data/cashback_repository.dart';
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/core/chat/data/chat_socket.dart';
 import 'package:ai_teacher/core/chat/presentation/chat_unread_provider.dart';
 import 'package:ai_teacher/core/promo/data/promo_dtos.dart';
@@ -52,7 +53,8 @@ class MainScreen extends ConsumerStatefulWidget {
   ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen>
+    with WidgetsBindingObserver {
   late int _activeTab = widget.initialTab;
 
   static const _pages = <Widget>[
@@ -69,9 +71,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   StreamSubscription<dynamic>? _chatUnreadSub;
   StreamSubscription<PromoEvent>? _promoSub;
+  Timer? _lessonRefresh;
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _lessonRefresh?.cancel();
     _chatUnreadSub?.cancel();
     _promoSub?.cancel();
     super.dispose();
@@ -80,6 +85,17 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _lessonRefresh = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted && _activeTab == MainScreen.coursesTab) {
+        ref.invalidate(activeLessonProvider);
+      }
+    });
+    if (_activeTab == MainScreen.coursesTab) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.invalidate(activeLessonProvider);
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       ref.read(callControllerProvider.notifier).ensureListening();
@@ -210,6 +226,15 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     }
     if (index == _activeTab) return;
     setState(() => _activeTab = index);
+    if (index == MainScreen.coursesTab) ref.invalidate(activeLessonProvider);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _activeTab == MainScreen.coursesTab) {
+      ref.invalidate(activeLessonProvider);
+    }
   }
 
   @override

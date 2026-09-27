@@ -7,20 +7,27 @@ class LobbyPlayer {
   const LobbyPlayer({
     required this.userId,
     required this.firstName,
+    this.avatar,
     this.score = 0,
   });
 
   final String userId;
   final String firstName;
+  final String? avatar;
   final int score;
 
-  LobbyPlayer withScore(int score) =>
-      LobbyPlayer(userId: userId, firstName: firstName, score: score);
+  LobbyPlayer withScore(int score) => LobbyPlayer(
+    userId: userId,
+    firstName: firstName,
+    avatar: avatar,
+    score: score,
+  );
 
   factory LobbyPlayer.fromJson(Map<String, dynamic> json) {
     return LobbyPlayer(
       userId: json['userId'] as String? ?? '',
       firstName: json['firstName'] as String? ?? '',
+      avatar: _readAvatar(json),
     );
   }
 }
@@ -162,11 +169,13 @@ class ScoreboardEntry {
     required this.score,
     required this.sumDelayMs,
     required this.answers,
+    this.avatar,
   });
 
   final int rank;
   final String userId;
   final String firstName;
+  final String? avatar;
   final int score;
   final int sumDelayMs;
   final List<BattleRoundAnswer> answers;
@@ -177,6 +186,7 @@ class ScoreboardEntry {
       rank: (json['rank'] as num?)?.toInt() ?? 0,
       userId: json['userId'] as String? ?? '',
       firstName: json['firstName'] as String? ?? '',
+      avatar: _readAvatar(json),
       score: (json['score'] as num?)?.toInt() ?? 0,
       sumDelayMs: (json['sumDelayMs'] as num?)?.toInt() ?? 0,
       answers: rawAnswers
@@ -187,6 +197,17 @@ class ScoreboardEntry {
           .toList(),
     );
   }
+}
+
+String? _readAvatar(Map<String, dynamic> json) {
+  final direct = json['avatar'] ?? json['avatarUrl'];
+  if (direct is String && direct.trim().isNotEmpty) return direct.trim();
+  final user = json['user'];
+  if (user is Map) {
+    final nested = user['avatar'] ?? user['avatarUrl'];
+    if (nested is String && nested.trim().isNotEmpty) return nested.trim();
+  }
+  return null;
 }
 
 @immutable
@@ -208,6 +229,21 @@ class PlayerAnsweredPayload {
   final bool correct;
   final int delayMs;
   final int score;
+}
+
+@immutable
+class PlayerReaction {
+  const PlayerReaction({required this.userId, required this.emoji});
+
+  final String userId;
+  final String emoji;
+
+  factory PlayerReaction.fromJson(Map<String, dynamic> json) {
+    return PlayerReaction(
+      userId: json['userId'] as String? ?? '',
+      emoji: json['emoji'] as String? ?? '',
+    );
+  }
 }
 
 @immutable

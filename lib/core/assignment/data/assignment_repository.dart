@@ -1,5 +1,6 @@
 import 'package:ai_teacher/app/data/dio_client.dart';
 import 'package:ai_teacher/core/assignment/data/assignment_dtos.dart';
+import 'package:ai_teacher/core/assignment/data/active_lesson.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,5 +29,14 @@ class AssignmentRepository {
     final data = response.data;
     if (data == null || data.isEmpty) return null;
     return MyMentor.fromJson(data);
+  }
+
+  Future<ActiveLesson?> getActiveLesson() async {
+    final response = await _dio.get<Map<String, dynamic>?>(
+      'lesson-booking/live/active',
+    );
+    final data = response.data;
+    if (data == null || data.isEmpty) return null;
+    return ActiveLesson.fromJson(data);
   }
 }

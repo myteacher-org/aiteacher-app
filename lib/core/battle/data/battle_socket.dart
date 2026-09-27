@@ -31,6 +31,7 @@ class BattleSocket {
   final _playerAnswered = StreamController<PlayerAnsweredPayload>.broadcast();
   final _roundEnd = StreamController<RoundEndData>.broadcast();
   final _gameOver = StreamController<List<ScoreboardEntry>>.broadcast();
+  final _playerReaction = StreamController<PlayerReaction>.broadcast();
   final _error = StreamController<String>.broadcast();
 
   Stream<String> get onQueueJoined => _queueJoined.stream;
@@ -57,6 +58,8 @@ class BattleSocket {
   Stream<RoundEndData> get onRoundEnd => _roundEnd.stream;
 
   Stream<List<ScoreboardEntry>> get onGameOver => _gameOver.stream;
+
+  Stream<PlayerReaction> get onPlayerReaction => _playerReaction.stream;
 
   Stream<String> get onError => _error.stream;
 
@@ -281,6 +284,14 @@ class BattleSocket {
       }
     });
 
+    socket.on('player_reaction', (data) {
+      try {
+        _playerReaction.add(PlayerReaction.fromJson(_asMap(data)));
+      } catch (e) {
+        debugPrint('player_reaction parse error: $e');
+      }
+    });
+
     socket.on('error', (data) {
       final msg = _asMap(data)['message'] as String? ?? 'Xatolik';
       _error.add(msg);
@@ -298,6 +309,10 @@ class BattleSocket {
     _socket?.emit('answer', {'lobbyId': lobbyId, 'optionIndex': optionIndex});
   }
 
+  void sendReaction({required String lobbyId, required String emoji}) {
+    _socket?.emit('emoji_reaction', {'lobbyId': lobbyId, 'emoji': emoji});
+  }
+
   void dispose() {
     _socket?.dispose();
     _socket = null;
@@ -313,6 +328,7 @@ class BattleSocket {
     _playerAnswered.close();
     _roundEnd.close();
     _gameOver.close();
+    _playerReaction.close();
     _error.close();
   }
 

@@ -2,6 +2,7 @@ import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/battle/data/battle_dtos.dart';
 import 'package:ai_teacher/core/battle/presentation/battle_controller.dart';
 import 'package:ai_teacher/core/student_activity/data/student_activity_socket.dart';
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/battle/widget/battle_game_over_view.dart';
 import 'package:ai_teacher/ui/battle/widget/battle_idle_view.dart';
@@ -42,6 +43,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(battleControllerProvider);
     final notifier = ref.read(battleControllerProvider.notifier);
+    final currentUser = ref.watch(currentUserProvider).valueOrNull;
 
     ref.listen(battleControllerProvider, (prev, next) {
       final err = next.error;
@@ -106,6 +108,10 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                         lobbyPlayers: state.lobbyPlayers,
                         lobbyTick: state.lobbyTick,
                         onCancel: notifier.leaveQueue,
+                        onReact: notifier.sendReaction,
+                        reactions: notifier.reactions,
+                        myUserId: state.myUserId,
+                        myAvatarPath: currentUser?.avatar,
                       ),
                       BattlePhase.playing => BattlePlayingView(
                         key: ValueKey('playing-${state.currentRound}'),
@@ -115,6 +121,7 @@ class _BattleScreenState extends ConsumerState<BattleScreen> {
                       BattlePhase.gameOver => BattleGameOverView(
                         key: const ValueKey('gameover'),
                         state: state,
+                        myAvatarPath: currentUser?.avatar,
                         onPlayAgain: notifier.joinQueue,
                         onExit: () {
                           notifier.reset();
