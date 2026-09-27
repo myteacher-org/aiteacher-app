@@ -5,6 +5,7 @@ import 'package:ai_teacher/core/assignment/presentation/my_assignments_controlle
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/cashback/cashback_info_sheet.dart';
+import 'package:ai_teacher/ui/home/widget/next_lesson_card.dart';
 import 'package:ai_teacher/ui/home/widget/book_demo_card.dart';
 import 'package:ai_teacher/ui/home/widget/cashback_card.dart';
 import 'package:ai_teacher/ui/home/widget/dictionary_card.dart';
@@ -146,6 +147,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   ),
                 ),
+                // Belgilangan jonli dars — havolasiz, shu yerdan kiriladi
+                const NextLessonCard(),
                 ref.watch(myMentorProvider).valueOrNull == null
                     ? const BookDemoCard()
                     : const RadarCard(),
