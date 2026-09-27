@@ -1,13 +1,15 @@
 class NetworkConfig {
   static const String localHostUrl = 'http://localhost:8000';
-  static const String devHostUrl =
-      'https://28d4-37-110-214-131.ngrok-free.app';
+  static const String devHostUrl = 'https://28d4-37-110-214-131.ngrok-free.app';
   static const String mainHostUrl = 'https://ai.myteacher.uz';
 
-  static String get hostUrl => const String.fromEnvironment(
-        'API_HOST_URL',
-        defaultValue: mainHostUrl,
-      );
+  static String get hostUrl =>
+      const String.fromEnvironment('API_HOST_URL', defaultValue: mainHostUrl);
+
+  /// Kurs olmagan o'quvchiga Kurslar bo'limida ko'rsatiladigan landing —
+  /// bepul 1-1 sinov darsiga yozilish. Dizayn va matn ilova yangilanishisiz o'zgaradi.
+  static const String trialLandingUrl =
+      'https://lesson.myteacher.uz/bepul-dars.html';
 
   static String get baseApiUrl => '$hostUrl/api/';
 

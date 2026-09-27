@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/core/course/data/course_dtos.dart';
 import 'package:ai_teacher/core/course/presentation/courses_controller.dart';
 import 'package:ai_teacher/core/plan/data/plan_dtos.dart';
@@ -12,6 +13,7 @@ import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/courses/widget/course_info_sheet.dart';
 import 'package:ai_teacher/ui/courses/widget/my_mentor_card.dart';
+import 'package:ai_teacher/ui/courses/widget/trial_landing_view.dart';
 import 'package:ai_teacher/ui/main/main_screen.dart';
 import 'package:ai_teacher/ui/profile/payment_types_sheet.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +115,12 @@ class CoursesPage extends ConsumerWidget {
     final mentorPlans = sellablePlans.where((p) => p.hasMentor).toList();
     final platformPlans = sellablePlans.where((p) => !p.hasMentor).toList();
     final subscription = user?.activeSubscription;
+    // Hali hech narsa olmagan o'quvchi (obuna, kurs va ustoz yo'q) —
+    // Kurslar o'rniga bepul 1-1 sinov darsi landingi
+    final hechNarsaYoq =
+        subscription == null &&
+        ref.watch(myMentorProvider).valueOrNull == null &&
+        !ref.watch(isDemoAccountProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -139,96 +147,99 @@ class CoursesPage extends ConsumerWidget {
             ],
           ),
         ),
-        data: (state) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(coursesControllerProvider.notifier).refresh(),
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 2),
-                  child: Text(
-                    l10n.coursesTitle,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.3,
+        data: (state) => hechNarsaYoq && state.mine.isEmpty
+            ? const TrialLandingView()
+            : RefreshIndicator(
+                onRefresh: () =>
+                    ref.read(coursesControllerProvider.notifier).refresh(),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 2),
+                        child: Text(
+                          l10n.coursesTitle,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: Text(
-                    l10n.coursesSubtitle,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Text(
+                          l10n.coursesSubtitle,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              // ── My enrolled courses ─────────────────────────────────────
-              if (state.mine.isNotEmpty) ...[
-                _SectionLabel(title: l10n.coursesMyEnrolledSectionTitle),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList.separated(
-                    itemCount: state.mine.length,
-                    separatorBuilder: (_, i) => const SizedBox(height: 10),
-                    itemBuilder: (_, i) =>
-                        _EnrolledCourseCard(course: state.mine[i]),
-                  ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
-              ],
-              // ── Active subscription banner ──────────────────────────────
-              if (subscription != null)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                    child: _ActiveSubscriptionBanner(
-                      subscription: subscription,
+                    // ── My enrolled courses ─────────────────────────────────────
+                    if (state.mine.isNotEmpty) ...[
+                      _SectionLabel(title: l10n.coursesMyEnrolledSectionTitle),
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        sliver: SliverList.separated(
+                          itemCount: state.mine.length,
+                          separatorBuilder: (_, i) =>
+                              const SizedBox(height: 10),
+                          itemBuilder: (_, i) =>
+                              _EnrolledCourseCard(course: state.mine[i]),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    ],
+                    // ── Active subscription banner ──────────────────────────────
+                    if (subscription != null)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                          child: _ActiveSubscriptionBanner(
+                            subscription: subscription,
+                          ),
+                        ),
+                      ),
+                    // ── My mentor ────────────────────────────────────────────────
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
+                        child: MyMentorCard(),
+                      ),
                     ),
-                  ),
-                ),
-              // ── My mentor ────────────────────────────────────────────────
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
-                  child: MyMentorCard(),
-                ),
-              ),
-              // ── Teacher mentoring hero ──────────────────────────────────
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _TeacherHeroSection(
-                    plans: mentorPlans,
-                    isSubscribed: subscription != null,
-                  ),
-                ),
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 16)),
-              // ── Platform section ────────────────────────────────────────
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _PlatformSection(
-                    plans: platformPlans,
-                    isSubscribed: subscription != null,
-                  ),
+                    // ── Teacher mentoring hero ──────────────────────────────────
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _TeacherHeroSection(
+                          plans: mentorPlans,
+                          isSubscribed: subscription != null,
+                        ),
+                      ),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    // ── Platform section ────────────────────────────────────────
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _PlatformSection(
+                          plans: platformPlans,
+                          isSubscribed: subscription != null,
+                        ),
+                      ),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 40)),
+                  ],
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 40)),
-            ],
-          ),
-        ),
       ),
     );
   }
