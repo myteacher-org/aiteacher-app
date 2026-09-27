@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:ai_teacher/ui/courses/course_web_screen.dart';
+import 'package:ai_teacher/core/lesson_booking/presentation/student_lessons_controller.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_theme.dart';
 import 'package:ai_teacher/core/locale/presentation/locale_controller.dart';
@@ -153,6 +155,19 @@ class _AppState extends ConsumerState<App> {
         router.push(AppRoute.support.path);
       case 'home':
         ref.read(pendingMainTabProvider.notifier).state = MainScreen.homeTab;
+      case 'lesson':
+        // "Dars boshlandi" — push ichidagi imzolangan havola bilan darsni
+        // ilova ichida ochamiz; havola bo'lmasa Home'dagi dars kartasiga
+        ref.invalidate(studentLessonsProvider);
+        final url = msg.data['url'] as String?;
+        if (url != null && url.startsWith('https://')) {
+          router.pushNamed(
+            AppRoute.linkWeb.name,
+            extra: LinkWebArgs(title: 'Dars', url: url),
+          );
+        } else {
+          ref.read(pendingMainTabProvider.notifier).state = MainScreen.homeTab;
+        }
       case 'courses':
         ref.read(pendingMainTabProvider.notifier).state = MainScreen.coursesTab;
       case 'profile':
