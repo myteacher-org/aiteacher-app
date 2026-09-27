@@ -52,7 +52,7 @@ Push notifications via Firebase Cloud Messaging. FCM `data.screen` values `"chat
 
 Routes are declared as the `AppRoute` enum in `app/router/app_router.dart`. Always navigate by name (`context.goNamed(AppRoute.x.name)`) rather than raw path strings. Route extras are typed — check the route builder for the expected type before pushing.
 
-`MainScreen` is the bottom-nav shell. Tab indices are constants on the class: `chatTab=0`, `coursesTab=1`, `homeTab=2`, `commentsTab=3`, `profileTab=4`. Pass the desired tab as `extra` when pushing to `AppRoute.main`.
+`MainScreen` is the bottom-nav shell. Tab indices are constants on the class: `chatTab=0`, `coursesTab=1`, `homeTab=2`, `blogTab=3`, `profileTab=4`. Pass the desired tab as `extra` when pushing to `AppRoute.main`.
 
 ### Session bootstrap
 
@@ -92,7 +92,6 @@ Routes are declared as the `AppRoute` enum in `app/router/app_router.dart`. Alwa
 | `core/update/` | In-app update checker using `upgrader` |
 | `core/user/` | User profile data |
 | `core/student_activity/` | Activity feed |
-| `core/comments/` | Blog/content comments |
 | `core/support/` | Support contact |
 
 ### Assets

@@ -62,8 +62,8 @@ class AppBottomNav extends StatelessWidget {
     (
       3,
       NavTab(
-        label: l10n.navTabComments,
-        icon: Icons.forum_outlined,
+        label: l10n.navTabBlog,
+        icon: Icons.article_outlined,
         iconColor: const Color(0xFFFB923C),
         iconBackground: const Color(0xFFFFF7ED),
       ),
