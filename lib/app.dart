@@ -4,7 +4,9 @@ import 'dart:io' show Platform;
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_theme.dart';
 import 'package:ai_teacher/core/locale/presentation/locale_controller.dart';
+import 'package:ai_teacher/core/auth/data/auth_session.dart';
 import 'package:ai_teacher/core/promo/data/promo_socket.dart';
+import 'package:ai_teacher/core/purchases/presentation/purchases_controller.dart';
 import 'package:ai_teacher/core/session/presentation/session_controller.dart';
 import 'package:ai_teacher/core/update/update_checker.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
@@ -40,6 +42,12 @@ class _AppState extends ConsumerState<App> {
   Future<void> _bootstrap() async {
     if (!mounted) return;
     final sessionCtrl = ref.read(sessionControllerProvider.notifier);
+
+    // RevenueCat must be configured before anything reads entitlements.
+    await ref
+        .read(purchasesControllerProvider.notifier)
+        .configure(userId: ref.read(authSessionProvider).currentUserId);
+    if (!mounted) return;
 
     // Connect promo socket immediately — no auth required to attempt.
     _connectPromoSocket();

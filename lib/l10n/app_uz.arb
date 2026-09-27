@@ -48,7 +48,7 @@
   "profileDeleteAccountWarning": "Bu amalni qaytarib bo'lmaydi",
 
   "navTabChat": "Chat",
-  "navTabCourses": "Kurs",
+  "navTabCourses": "Dars",
   "navTabHome": "Home",
   "navTabBlog": "Blog",
   "webViewLoadError": "Sahifani yuklab bo'lmadi. Internet aloqasini tekshiring.",
@@ -353,7 +353,6 @@
   "authReferralCodeHint": "A1B2C3D4",
   "authRegisterLoadingLabel": "Yuborilmoqda...",
   "authContinueButtonLabel": "Davom etish  →",
-  "authTermsAgreementText": "Davom etish orqali Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz",
   "authPhoneTabLabel": "Telefon",
   "authEmailTabLabel": "Email",
   "authPhoneCountryPrefix": "+998",
@@ -832,5 +831,14 @@
       "active": { "type": "String" },
       "target": { "type": "String" }
     }
-  }
+  },
+  "purchaseSheetTitle": "Suhbat limitini oshiring",
+  "purchaseSheetSubtitle": "Bepul suhbatlar tugadi. Qo'shimcha suhbat olib, AI ustoz bilan gaplashishda davom eting.",
+  "purchaseBuyButton": "Sotib olish",
+  "purchaseProcessingLabel": "Kuting...",
+  "purchaseFailedMessage": "Xarid amalga oshmadi. Qayta urinib ko'ring.",
+  "purchaseCreditFailedMessage": "To'lov qabul qilindi, lekin daqiqalar qo'shilmadi. Iltimos, qo'llab-quvvatlash xizmatiga yozing.",
+  "purchaseLoadError": "Narxlarni yuklab bo'lmadi",
+  "purchaseTermsLabel": "Foydalanish shartlari",
+  "purchasePrivacyLabel": "Maxfiylik siyosati"
 }

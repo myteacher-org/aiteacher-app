@@ -121,6 +121,15 @@ class SpeakingRepository {
     );
     return ConversationLimit.fromJson(response.data ?? const {});
   }
+
+  /// Adds [minutes] of extra AI speaking to today's limit. Called after a
+  /// completed store purchase of a speaking add-on.
+  Future<void> addSpeakingMinutes(int minutes) async {
+    await _dio.post<Map<String, dynamic>>(
+      'assessments/speaking/addon',
+      data: {'minutes': minutes},
+    );
+  }
 }
 
 final conversationLimitProvider = FutureProvider.autoDispose<ConversationLimit>(

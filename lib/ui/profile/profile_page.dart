@@ -2,6 +2,7 @@ import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/auth/data/auth_repository.dart';
 import 'package:ai_teacher/core/locale/presentation/locale_controller.dart';
+import 'package:ai_teacher/core/purchases/presentation/purchases_controller.dart';
 import 'package:ai_teacher/core/streak/presentation/streak_check_in_controller.dart';
 import 'package:ai_teacher/core/user/data/user_repository.dart';
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
@@ -72,6 +73,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       ),
     );
     if (confirmed != true) return;
+    await ref.read(purchasesControllerProvider.notifier).reset();
     await ref.read(authRepositoryProvider).signOut();
     if (!mounted) return;
     ref.invalidate(currentUserProvider);

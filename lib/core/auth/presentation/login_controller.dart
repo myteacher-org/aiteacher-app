@@ -2,7 +2,9 @@ import 'package:ai_teacher/app/data/cache_service.dart';
 import 'package:ai_teacher/core/auth/data/auth_dtos.dart';
 import 'package:ai_teacher/core/auth/data/auth_exception.dart';
 import 'package:ai_teacher/core/auth/data/auth_repository.dart';
+import 'package:ai_teacher/core/auth/data/auth_session.dart';
 import 'package:ai_teacher/core/auth/presentation/auth_action_state.dart';
+import 'package:ai_teacher/core/purchases/presentation/purchases_controller.dart';
 import 'package:ai_teacher/core/session/presentation/session_controller.dart';
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +33,10 @@ class LoginController extends Notifier<AuthActionState> {
         // Non-fatal: profile screen will retry on its own watch.
       }
       await ref.read(sessionControllerProvider.notifier).claimSession();
+      final userId = ref.read(authSessionProvider).currentUserId;
+      if (userId != null) {
+        await ref.read(purchasesControllerProvider.notifier).identify(userId);
+      }
       final cache = ref.read(cacheServiceProvider);
       await cache.setWebIdentifier(email ?? phoneNumber ?? '');
       await cache.setWebPassword(password);

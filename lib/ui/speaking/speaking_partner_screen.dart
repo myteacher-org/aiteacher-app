@@ -6,6 +6,7 @@ import 'package:ai_teacher/core/speaking/data/speaking_repository.dart';
 import 'package:ai_teacher/core/speaking/presentation/speaking_controller.dart';
 import 'package:ai_teacher/core/student_activity/data/student_activity_socket.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
+import 'package:ai_teacher/ui/purchases/extend_limit_sheet.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_avatar.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_controls.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_top_bar.dart';
@@ -46,12 +47,22 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
     }
   }
 
-  void _onConversationLimitReached() {
+  /// Offers the limit-extension purchase sheet. Returns true when the user
+  /// bought more conversations; otherwise shows the limit notice and leaves
+  /// the screen.
+  Future<bool> _onConversationLimitReached() async {
+    final purchased = await ExtendLimitSheet.show(context, ref);
+    if (!mounted) return false;
+    if (purchased) {
+      ref.invalidate(conversationLimitProvider);
+      return true;
+    }
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(l10n.speakingScreenLimitTitle)));
     _onBack();
+    return false;
   }
 
   String _formatDuration(Duration d) {
@@ -69,8 +80,7 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
       if (state.conversationId == null) {
         final limit = ref.read(conversationLimitProvider).valueOrNull;
         if (limit != null && limit.remaining == 0 && !limit.isUnlimited) {
-          _onConversationLimitReached();
-          return;
+          if (!await _onConversationLimitReached()) return;
         }
       }
       await controller.startRecording();

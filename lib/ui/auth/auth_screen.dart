@@ -286,40 +286,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     ),
                   ),
                 ),
-                if (!isKeyboardOpen)
-                  SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-                      child: Column(
-                        children: [
-                          PrimaryButton(
-                            label: submitLabel,
-                            enabled: !loading,
-                            onPressed: _onSubmit,
-                          ),
-                          if (_step != _AuthStep.login) ...[
-                            const SizedBox(height: 10),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Text(
-                                l10n.authTermsAgreementText,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Color(0xFFBBBBBB),
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.5,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      12,
+                      24,
+                      isKeyboardOpen ? 12 : 32,
+                    ),
+                    child: PrimaryButton(
+                      label: submitLabel,
+                      enabled: !loading,
+                      onPressed: _onSubmit,
                     ),
                   ),
+                ),
               ],
             ),
           ),

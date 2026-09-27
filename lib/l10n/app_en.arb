@@ -48,7 +48,7 @@
   "profileDeleteAccountWarning": "This action cannot be undone",
 
   "navTabChat": "Chat",
-  "navTabCourses": "Course",
+  "navTabCourses": "Study",
   "navTabHome": "Home",
   "navTabBlog": "Blog",
   "webViewLoadError": "Couldn't load the page. Check your internet connection.",
@@ -353,7 +353,6 @@
   "authReferralCodeHint": "A1B2C3D4",
   "authRegisterLoadingLabel": "Submitting...",
   "authContinueButtonLabel": "Continue  →",
-  "authTermsAgreementText": "By continuing you agree to the Terms of Use and Privacy Policy",
   "authPhoneTabLabel": "Phone",
   "authEmailTabLabel": "Email",
   "authPhoneCountryPrefix": "+998",
@@ -832,5 +831,14 @@
       "active": { "type": "String" },
       "target": { "type": "String" }
     }
-  }
+  },
+  "purchaseSheetTitle": "Extend your limit",
+  "purchaseSheetSubtitle": "You've used your free conversations. Get more to keep talking with your AI teacher.",
+  "purchaseBuyButton": "Buy",
+  "purchaseProcessingLabel": "Please wait...",
+  "purchaseFailedMessage": "Purchase failed. Please try again.",
+  "purchaseCreditFailedMessage": "Payment went through, but the minutes couldn't be added. Please contact support.",
+  "purchaseLoadError": "Couldn't load prices",
+  "purchaseTermsLabel": "Terms of Use",
+  "purchasePrivacyLabel": "Privacy Policy"
 }

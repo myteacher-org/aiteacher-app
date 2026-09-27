@@ -89,6 +89,7 @@ Routes are declared as the `AppRoute` enum in `app/router/app_router.dart`. Alwa
 | `core/writing_task/` | Written assignment submission |
 | `core/assignment/` | General assignments |
 | `core/notification/` | In-app notification list |
+| `core/purchases/` | RevenueCat SDK (`purchases_flutter`); app user id = backend user id; keys in `revenuecat_config.dart`. Custom limit-extension purchase sheet in `ui/purchases/` (API credits the purchase via webhook) |
 | `core/update/` | In-app update checker using `upgrader` |
 | `core/user/` | User profile data |
 | `core/student_activity/` | Activity feed |
