@@ -62,7 +62,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
       level: _answers.length > 1 ? _answers[1] : null,
       dailyTime: _answers.length > 2 ? _answers[2] : null,
     );
-    context.goNamed(AppRoute.register.name, extra: answers);
+    context.goNamed(AppRoute.login.name, extra: answers);
   }
 
   void _onBack() {

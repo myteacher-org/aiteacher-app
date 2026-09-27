@@ -9,6 +9,7 @@ import 'package:ai_teacher/core/session/presentation/session_controller.dart';
 import 'package:ai_teacher/core/update/update_checker.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/main/main_screen.dart';
+import 'package:ai_teacher/ui/shared/widget/keyboard_dismiss_bar.dart';
 import 'package:ai_teacher/ui/shared/widget/update_dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -171,6 +172,8 @@ class _AppState extends ConsumerState<App> {
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) =>
+          KeyboardDismissBarHost(child: child ?? const SizedBox.shrink()),
     );
   }
 }

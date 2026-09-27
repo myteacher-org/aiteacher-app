@@ -94,7 +94,7 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 WelcomeCta(
                   label: '${l10n.onboardingCtaLabel}  →',
-                  onPressed: () => context.goNamed(AppRoute.survey.name),
+                  onPressed: () => context.pushNamed(AppRoute.login.name),
                 ),
                 const SizedBox(height: 14),
                 Row(

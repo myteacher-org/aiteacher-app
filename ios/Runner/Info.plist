@@ -28,10 +28,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Video darslarni ko'rish uchun kamera kerak.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Profil rasmingizni yangilash uchun galereyaga kirish kerak.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>AI Teacher mikrofondan foydalanib siz aytgan gaplarni tahlil qiladi.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil rasmingizni yangilash uchun galereyaga kirish kerak.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

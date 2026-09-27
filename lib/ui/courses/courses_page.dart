@@ -1,23 +1,14 @@
-import 'dart:io';
-
 import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/course/data/course_dtos.dart';
 import 'package:ai_teacher/core/course/presentation/courses_controller.dart';
-import 'package:ai_teacher/core/plan/data/plan_dtos.dart';
-import 'package:ai_teacher/core/plan/presentation/available_plans_controller.dart';
-import 'package:ai_teacher/core/user/data/user_dtos.dart';
-import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
 import 'package:ai_teacher/ui/courses/widget/course_info_sheet.dart';
 import 'package:ai_teacher/ui/courses/widget/my_mentor_card.dart';
-import 'package:ai_teacher/ui/main/main_screen.dart';
-import 'package:ai_teacher/ui/profile/payment_types_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // ─── Static testimonial data ──────────────────────────────────────────────────
 
@@ -102,17 +93,6 @@ class CoursesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final async = ref.watch(coursesControllerProvider);
-    final user = ref.watch(currentUserProvider).valueOrNull;
-    final plans =
-        ref.watch(availablePlansProvider).valueOrNull ?? const <Plan>[];
-    // Demo accounts see the course content without any pricing: the hero and
-    // platform sections drop their price blocks when they get no plans.
-    final sellablePlans = ref.watch(isDemoAccountProvider)
-        ? const <Plan>[]
-        : plans;
-    final mentorPlans = sellablePlans.where((p) => p.hasMentor).toList();
-    final platformPlans = sellablePlans.where((p) => !p.hasMentor).toList();
-    final subscription = user?.activeSubscription;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -187,16 +167,6 @@ class CoursesPage extends ConsumerWidget {
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
-              // ── Active subscription banner ──────────────────────────────
-              if (subscription != null)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                    child: _ActiveSubscriptionBanner(
-                      subscription: subscription,
-                    ),
-                  ),
-                ),
               // ── My mentor ────────────────────────────────────────────────
               const SliverToBoxAdapter(
                 child: Padding(
@@ -205,24 +175,18 @@ class CoursesPage extends ConsumerWidget {
                 ),
               ),
               // ── Teacher mentoring hero ──────────────────────────────────
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _TeacherHeroSection(
-                    plans: mentorPlans,
-                    isSubscribed: subscription != null,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: _TeacherHeroSection(),
                 ),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 16)),
               // ── Platform section ────────────────────────────────────────
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _PlatformSection(
-                    plans: platformPlans,
-                    isSubscribed: subscription != null,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: _PlatformSection(),
                 ),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 40)),
@@ -255,74 +219,6 @@ class _SectionLabel extends StatelessWidget {
             letterSpacing: 0.4,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ─── Active subscription banner ───────────────────────────────────────────────
-
-class _ActiveSubscriptionBanner extends StatelessWidget {
-  const _ActiveSubscriptionBanner({required this.subscription});
-
-  final ActiveSubscription subscription;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final daysLeft = _daysLeft(subscription.endDate);
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.tintTeal,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.verified_rounded,
-              color: AppColors.primary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.coursesSubscriptionActiveLabel,
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.coursesSubscriptionStatus(
-                    _formatDate(subscription.endDate, context),
-                    daysLeft,
-                  ),
-                  style: const TextStyle(
-                    color: Color(0xFF64748B),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -389,10 +285,7 @@ class _TeacherAvatarState extends State<_TeacherAvatar>
 // ─── Teacher hero section ─────────────────────────────────────────────────────
 
 class _TeacherHeroSection extends StatelessWidget {
-  const _TeacherHeroSection({required this.plans, required this.isSubscribed});
-
-  final List<Plan> plans;
-  final bool isSubscribed;
+  const _TeacherHeroSection();
 
   @override
   Widget build(BuildContext context) {
@@ -558,49 +451,6 @@ class _TeacherHeroSection extends StatelessWidget {
                         _TestimonialCard(data: testimonials[i]),
                   ),
                 ),
-                // ── Pricing ──────────────────────────────────────────────
-                if (!isSubscribed && plans.isNotEmpty) ...[
-                  const SizedBox(height: 26),
-                  _RowDivider(label: l10n.coursesPricingDividerLabel),
-                  const SizedBox(height: 14),
-                  for (final plan in plans)
-                    _PlanPriceBlock(plan: plan, dark: true),
-                ],
-                // ── Subscribed badge ──────────────────────────────────────
-                if (isSubscribed) ...[
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 11,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(11),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          color: AppColors.primaryLight,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.coursesTeacherSubscribedBadge,
-                          style: const TextStyle(
-                            color: AppColors.primaryLight,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
@@ -775,238 +625,6 @@ class _TestimonialCard extends StatelessWidget {
   }
 }
 
-// ─── Plan price block + row ───────────────────────────────────────────────────
-
-class _PlanPriceBlock extends StatelessWidget {
-  const _PlanPriceBlock({required this.plan, required this.dark});
-
-  final Plan plan;
-  final bool dark;
-
-  @override
-  Widget build(BuildContext context) {
-    if (plan.prices.isEmpty) return const SizedBox.shrink();
-    final l10n = AppLocalizations.of(context);
-    final popularIdx = plan.prices.length >= 2 ? 1 : -1;
-    return Column(
-      children: [
-        for (var i = 0; i < plan.prices.length; i++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _PriceRow(
-              price: plan.prices[i],
-              planName: plan.name.isEmpty
-                  ? l10n.coursesDefaultPlanName
-                  : plan.name,
-              isPopular: i == popularIdx,
-              dark: dark,
-              hasMentor: plan.hasMentor,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _PriceRow extends StatelessWidget {
-  const _PriceRow({
-    required this.price,
-    required this.planName,
-    required this.dark,
-    this.isPopular = false,
-    this.hasMentor = false,
-  });
-
-  final PlanPrice price;
-  final String planName;
-  final bool dark;
-  final bool isPopular;
-  final bool hasMentor;
-
-  // On iOS, platform (one-to-many) subscriptions must not go through in-app
-  // payment — Apple guideline 3.1.3(d). Redirect to website instead.
-  // Mentor plans are 1:1 person-to-person and are exempt (3.1.3(b)).
-  bool get _iosWebRedirect => Platform.isIOS && !hasMentor;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final hasSaving = price.hasDiscount;
-    final savingPct = hasSaving
-        ? ((price.actualPrice - price.price) / price.actualPrice * 100).round()
-        : 0;
-    final perMonth = price.price / price.month;
-
-    final bgColor = isPopular
-        ? AppColors.primary.withValues(alpha: dark ? 0.18 : 0.1)
-        : (dark ? Colors.white.withValues(alpha: 0.05) : Colors.white);
-    final borderColor = isPopular
-        ? AppColors.primary.withValues(alpha: 0.5)
-        : (dark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFE2E8F0));
-    final textColor = dark ? Colors.white : AppColors.textPrimary;
-    final subColor = dark
-        ? Colors.white.withValues(alpha: 0.45)
-        : AppColors.textSecondary;
-
-    return InkWell(
-      onTap: () async {
-        if (_iosWebRedirect) {
-          final uri = Uri.parse(NetworkConfig.mainHostUrl);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
-          return;
-        }
-        final paymentId = await PaymentTypesSheet.show(
-          context,
-          amount: price.price,
-          title: '$planName · ${l10n.coursesMonthsShort(price.month)}',
-        );
-        if (paymentId != null && context.mounted) {
-          context.goNamed(AppRoute.main.name, extra: MainScreen.coursesTab);
-        }
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 5,
-                    runSpacing: 4,
-                    children: [
-                      Text(
-                        l10n.coursesMonthlySubscriptionLabel(price.month),
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (isPopular)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFBBF24),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            l10n.coursesPopularBadge,
-                            style: const TextStyle(
-                              color: Color(0xFF1A1200),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.4,
-                            ),
-                          ),
-                        ),
-                      if (hasSaving)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF10B981,
-                            ).withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: const Color(
-                                0xFF10B981,
-                              ).withValues(alpha: 0.35),
-                            ),
-                          ),
-                          child: Text(
-                            '-$savingPct%',
-                            style: const TextStyle(
-                              color: Color(0xFF10B981),
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (price.month > 1) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      l10n.coursesPerMonthPrice(_formatPrice(perMonth.round())),
-                      style: TextStyle(color: subColor, fontSize: 11),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (hasSaving)
-                  Text(
-                    _formatPrice(price.actualPrice),
-                    style: TextStyle(
-                      color: subColor,
-                      fontSize: 11,
-                      decoration: TextDecoration.lineThrough,
-                      decorationColor: subColor,
-                    ),
-                  ),
-                Text(
-                  _formatPrice(price.price),
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-              decoration: BoxDecoration(
-                color: isPopular
-                    ? AppColors.primary
-                    : (dark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : AppColors.primary.withValues(alpha: 0.08)),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Text(
-                l10n.coursesSelectButton,
-                style: TextStyle(
-                  color: isPopular
-                      ? Colors.white
-                      : (dark
-                            ? Colors.white.withValues(alpha: 0.75)
-                            : AppColors.primary),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 // ─── Platform animated avatar ─────────────────────────────────────────────────
 
 class _PlatformAvatar extends StatefulWidget {
@@ -1068,10 +686,7 @@ class _PlatformAvatarState extends State<_PlatformAvatar>
 // ─── Platform section ─────────────────────────────────────────────────────────
 
 class _PlatformSection extends StatelessWidget {
-  const _PlatformSection({required this.plans, required this.isSubscribed});
-
-  final List<Plan> plans;
-  final bool isSubscribed;
+  const _PlatformSection();
 
   static const _violet = Color(0xFF7C3AED);
   static const _violetLight = Color(0xFFA78BFA);
@@ -1278,47 +893,6 @@ class _PlatformSection extends StatelessWidget {
                         _TestimonialCard(data: testimonials[i]),
                   ),
                 ),
-                // ── Pricing ──────────────────────────────────────────────
-                if (!isSubscribed && plans.isNotEmpty) ...[
-                  const SizedBox(height: 26),
-                  _RowDivider(label: l10n.coursesPricingDividerLabel),
-                  const SizedBox(height: 14),
-                  for (final plan in plans)
-                    _PlanPriceBlock(plan: plan, dark: true),
-                ],
-                // ── Subscribed badge ──────────────────────────────────────
-                if (isSubscribed) ...[
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 11,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _violet.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(11),
-                      border: Border.all(color: _violet.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          color: _violetLight,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.coursesPlatformSubscribedBadge,
-                          style: const TextStyle(
-                            color: _violetLight,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
@@ -1538,65 +1112,4 @@ class _CourseCover extends StatelessWidget {
       color: AppColors.primary.withValues(alpha: 0.4),
     ),
   );
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const _uzMonths = [
-  'yanvar',
-  'fevral',
-  'mart',
-  'aprel',
-  'may',
-  'iyun',
-  'iyul',
-  'avgust',
-  'sentabr',
-  'oktabr',
-  'noyabr',
-  'dekabr',
-];
-
-const _enMonths = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-String _formatDate(DateTime d, BuildContext context) {
-  final local = d.toLocal();
-  final isEn = Localizations.localeOf(context).languageCode == 'en';
-  final months = isEn ? _enMonths : _uzMonths;
-  final month = (local.month >= 1 && local.month <= 12)
-      ? months[local.month - 1]
-      : '';
-  return isEn
-      ? '$month ${local.day}, ${local.year}'
-      : '${local.day}-$month ${local.year}';
-}
-
-int _daysLeft(DateTime endDate) {
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final delta = endDate.toLocal().difference(today).inDays;
-  return delta < 0 ? 0 : delta;
-}
-
-String _formatPrice(num value) {
-  final s = value.toInt().toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < s.length; i++) {
-    if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
-    buf.write(s[i]);
-  }
-  return "${buf.toString()} so'm";
 }

@@ -7,7 +7,6 @@ class User {
     this.email,
     this.avatar,
     this.referralCode,
-    this.activeSubscription,
     this.student,
   });
 
@@ -20,7 +19,6 @@ class User {
 
   /// User's own referral code that others can use at sign-up.
   final String? referralCode;
-  final ActiveSubscription? activeSubscription;
 
   /// Student-specific onboarding + skill snapshot. Null for non-students.
   final StudentProfile? student;
@@ -30,20 +28,7 @@ class User {
   String get initial =>
       firstName.isNotEmpty ? firstName.substring(0, 1).toUpperCase() : '?';
 
-  /// Demo accounts used for store review. Real users always sign up with a
-  /// phone number, so an account that carries an email and no phone is a
-  /// demo one. All payment UI is hidden for these accounts — read it through
-  /// `isDemoAccountProvider` rather than re-deriving it in the UI.
-  bool get isDemo {
-    final hasPhone = phoneNumber.trim().isNotEmpty;
-    final hasEmail = email?.trim().isNotEmpty ?? false;
-    // The legacy demo account predates the email-only rule and still signs
-    // in with this reserved phone number.
-    return (!hasPhone && hasEmail) || phoneNumber.endsWith('990000000');
-  }
-
   factory User.fromJson(Map<String, dynamic> json) {
-    final sub = json['activeSubscription'];
     final stu = json['student'];
     return User(
       id: json['id'] as String? ?? '',
@@ -53,9 +38,6 @@ class User {
       email: json['email'] as String?,
       avatar: json['avatar'] as String?,
       referralCode: json['referralCode'] as String?,
-      activeSubscription: sub is Map<String, dynamic>
-          ? ActiveSubscription.fromJson(sub)
-          : null,
       student: stu is Map<String, dynamic>
           ? StudentProfile.fromJson(stu)
           : null,
@@ -131,30 +113,6 @@ class StudentProfile {
       listening: CefrLevel.fromApi(json['listeningLevel'] as String?),
       speaking: CefrLevel.fromApi(json['speakingLevel'] as String?),
       fluency: CefrLevel.fromApi(json['fluencyLevel'] as String?),
-    );
-  }
-}
-
-class ActiveSubscription {
-  const ActiveSubscription({
-    required this.id,
-    required this.startDate,
-    required this.endDate,
-  });
-
-  final String id;
-  final DateTime startDate;
-  final DateTime endDate;
-
-  factory ActiveSubscription.fromJson(Map<String, dynamic> json) {
-    return ActiveSubscription(
-      id: json['id'] as String? ?? '',
-      startDate:
-          DateTime.tryParse(json['startDate'] as String? ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0),
-      endDate:
-          DateTime.tryParse(json['endDate'] as String? ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
 }

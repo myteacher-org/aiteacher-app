@@ -85,13 +85,10 @@ Routes are declared as the `AppRoute` enum in `app/router/app_router.dart`. Alwa
 | `core/cashback/` | Cashback rewards; unclaimed cashback surfaces via modal queue |
 | `core/streak/` | Daily check-in streak; streak sheet surfaces via modal queue |
 | `core/course/` | Course listing; `CourseWebScreen` opens course URLs in `flutter_inappwebview` |
-| `core/cards/` | Flashcard-style study cards |
 | `core/vocabulary/` | Vocabulary training |
 | `core/writing_task/` | Written assignment submission |
 | `core/assignment/` | General assignments |
 | `core/notification/` | In-app notification list |
-| `core/payment/` | Payment flows |
-| `core/plan/` | Subscription plans |
 | `core/update/` | In-app update checker using `upgrader` |
 | `core/user/` | User profile data |
 | `core/student_activity/` | Activity feed |

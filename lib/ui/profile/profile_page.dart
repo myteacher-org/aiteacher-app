@@ -6,13 +6,10 @@ import 'package:ai_teacher/core/streak/presentation/streak_check_in_controller.d
 import 'package:ai_teacher/core/user/data/user_repository.dart';
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
-import 'package:ai_teacher/ui/profile/cards_sheet.dart';
 import 'package:ai_teacher/ui/profile/edit_password_dialog.dart';
 import 'package:ai_teacher/ui/profile/edit_profile_dialog.dart';
 import 'package:ai_teacher/ui/profile/language_picker_sheet.dart';
-import 'package:ai_teacher/ui/profile/subscription_details_sheet.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_group_card.dart';
-import 'package:ai_teacher/ui/profile/widget/profile_pill_badge.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_row.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_section_label.dart';
 import 'package:ai_teacher/ui/profile/widget/profile_toggle.dart';
@@ -161,17 +158,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final l10n = AppLocalizations.of(context);
     final locale = ref.watch(localeControllerProvider) ?? const Locale('uz');
     final user = ref.watch(currentUserProvider).valueOrNull;
-    final isDemo = ref.watch(isDemoAccountProvider);
     final displayName = user?.fullName ?? '';
     final displayPhone = UzPhoneFormatter.formatInternational(
       user?.phoneNumber ?? '',
     );
     final displayInitial = user?.initial ?? '';
-    final subscription = user?.activeSubscription;
-    final hasActiveSubscription = subscription != null;
-    final proPaketSubtitle = hasActiveSubscription
-        ? _subscriptionSubtitle(l10n, locale, subscription.endDate)
-        : l10n.profileNoActiveSubscription;
     final currentLanguageLabel = locale.languageCode == 'en'
         ? l10n.languageNameEnglish
         : l10n.languageNameUzbek;
@@ -243,53 +234,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
             ],
           ),
-          if (!isDemo) ...[
-            ProfileSectionLabel(text: l10n.profileSectionSubscription),
-            ProfileGroupCard(
-              children: [
-                ProfileRow(
-                  icon: Icons.star_outline_rounded,
-                  iconColor: const Color(0xFFD97706),
-                  iconBackground: const Color(0xFFFEF9C3),
-                  title: l10n.profileProPackage,
-                  subtitle: proPaketSubtitle,
-                  trailing: ProfileTrailingValue(
-                    badge: hasActiveSubscription
-                        ? ProfilePillBadge(
-                            label: l10n.profileActiveBadge,
-                            background: const Color(0xFFDCFCE7),
-                            textColor: const Color(0xFF15803D),
-                          )
-                        : null,
-                  ),
-                  onTap: () => SubscriptionDetailsSheet.show(context),
-                ),
-                ProfileRow(
-                  icon: Icons.credit_card_rounded,
-                  iconColor: const Color(0xFF2563EB),
-                  iconBackground: const Color(0xFFEFF6FF),
-                  title: l10n.profileCardsLabel,
-                  subtitle: l10n.profilePaymentCards,
-                  trailing: const ProfileTrailingValue(),
-                  onTap: () => CardsSheet.show(context),
-                ),
-                ProfileRow(
-                  icon: Icons.description_outlined,
-                  iconColor: const Color(0xFF64748B),
-                  iconBackground: const Color(0xFFF1F5F9),
-                  title: l10n.profilePaymentHistory,
-                  trailing: const ProfileTrailingValue(
-                    badge: ProfilePillBadge(
-                      label: '0',
-                      background: Color(0xFFFEF9C3),
-                      textColor: Color(0xFFB45309),
-                    ),
-                  ),
-                  onTap: () {},
-                ),
-              ],
-            ),
-          ],
           ProfileSectionLabel(text: l10n.profileSectionNotifications),
           ProfileGroupCard(
             children: [
@@ -380,53 +324,4 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       ),
     );
   }
-}
-
-const _uzMonthsGenitive = [
-  'yanvargacha',
-  'fevralgacha',
-  'martgacha',
-  'aprelgacha',
-  'maygacha',
-  'iyungacha',
-  'iyulgacha',
-  'avgustgacha',
-  'sentabrgacha',
-  'oktabrgacha',
-  'noyabrgacha',
-  'dekabrgacha',
-];
-
-const _enMonths = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-String _subscriptionSubtitle(
-  AppLocalizations l10n,
-  Locale locale,
-  DateTime endDate,
-) {
-  final now = DateTime.now();
-  final endLocal = endDate.toLocal();
-  final daysLeft = endLocal
-      .difference(DateTime(now.year, now.month, now.day))
-      .inDays;
-  final isEnglish = locale.languageCode == 'en';
-  final dateLabel = isEnglish
-      ? '${_enMonths[endLocal.month - 1]} ${endLocal.day}'
-      : '${endLocal.day}-${_uzMonthsGenitive[endLocal.month - 1]}';
-  return daysLeft > 0
-      ? l10n.profileSubscriptionActive(dateLabel, daysLeft)
-      : l10n.profileSubscriptionExpired(dateLabel);
 }

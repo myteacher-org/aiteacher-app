@@ -111,45 +111,8 @@ class SpeakingRepository {
     if (report is! Map) return null;
     return Assessment.fromJson({
       ...report.cast<String, dynamic>(),
-      // Server merges the gating flag at the conversation level, not under report.
-      'isFullReportAvailable': data['isFullReportAvailable'] ?? true,
       'conversationId': conversationId,
     });
-  }
-
-  /// Returns the server-configured price (in UZS) for a one-time
-  /// full-report unlock — driven by the `UNLOCK_REPORT_PRICE` env var.
-  Future<int> getReportUnlockPrice() async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      'assessments/report/price',
-    );
-    final data = response.data ?? const {};
-    final raw = data['price'];
-    if (raw is num) return raw.toInt();
-    if (raw is String) return int.tryParse(raw) ?? 0;
-    return 0;
-  }
-
-  /// Links a previously-created payment to a conversation so the server can
-  /// flip `isFullReportAvailable` once that payment lands in `success`.
-  Future<void> assignPaymentToConversation({
-    required String conversationId,
-    required String paymentId,
-  }) async {
-    await _dio.post<Map<String, dynamic>>(
-      'assessments/conversation/$conversationId/payment',
-      data: {'paymentId': paymentId},
-    );
-  }
-
-  /// Returns the linked payment's status (or all-null if none is linked yet).
-  Future<ConversationPaymentStatus> getConversationPaymentStatus(
-    String conversationId,
-  ) async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      'assessments/conversation/$conversationId/payment',
-    );
-    return ConversationPaymentStatus.fromJson(response.data ?? const {});
   }
 
   Future<ConversationLimit> getConversationLimit() async {
@@ -158,13 +121,6 @@ class SpeakingRepository {
     );
     return ConversationLimit.fromJson(response.data ?? const {});
   }
-
-  Future<void> purchaseConversationAddon(String paymentId) async {
-    await _dio.post<void>(
-      'assessments/conversation/addon',
-      data: {'paymentId': paymentId},
-    );
-  }
 }
 
 final conversationLimitProvider = FutureProvider.autoDispose<ConversationLimit>(
@@ -172,23 +128,3 @@ final conversationLimitProvider = FutureProvider.autoDispose<ConversationLimit>(
     return ref.read(speakingRepositoryProvider).getConversationLimit();
   },
 );
-
-class ConversationPaymentStatus {
-  const ConversationPaymentStatus({
-    this.paymentId,
-    this.status,
-    this.isPaid = false,
-  });
-
-  final String? paymentId;
-  final String? status;
-  final bool isPaid;
-
-  factory ConversationPaymentStatus.fromJson(Map<String, dynamic> json) {
-    return ConversationPaymentStatus(
-      paymentId: json['paymentId'] as String?,
-      status: json['status'] as String?,
-      isPaid: json['isPaid'] as bool? ?? false,
-    );
-  }
-}

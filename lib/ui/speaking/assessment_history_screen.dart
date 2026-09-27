@@ -223,22 +223,16 @@ class _HistoryItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: !item.hasReport
                       ? const Color(0xFFF1F5F9)
-                      : item.isFullReportAvailable
-                      ? const Color(0xFFDCFCE7)
-                      : const Color(0xFFFEF3C7),
+                      : const Color(0xFFDCFCE7),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   !item.hasReport
                       ? Icons.history_rounded
-                      : item.isFullReportAvailable
-                      ? Icons.assignment_turned_in_rounded
-                      : Icons.lock_outline_rounded,
+                      : Icons.assignment_turned_in_rounded,
                   color: !item.hasReport
                       ? const Color(0xFF64748B)
-                      : item.isFullReportAvailable
-                      ? const Color(0xFF15803D)
-                      : const Color(0xFFB45309),
+                      : const Color(0xFF15803D),
                   size: 22,
                 ),
               ),
@@ -264,23 +258,17 @@ class _HistoryItem extends StatelessWidget {
                               ? (item.readyForAnalyze
                                     ? l10n.speakingScreenStatusReady
                                     : l10n.speakingScreenStatusNotEnough)
-                              : item.isFullReportAvailable
-                              ? l10n.speakingScreenStatusFullReport
-                              : l10n.speakingScreenStatusPartialReport,
+                              : l10n.speakingScreenStatusFullReport,
                           background: !item.hasReport
                               ? (item.readyForAnalyze
                                     ? const Color(0xFFFEF3C7)
                                     : const Color(0xFFF1F5F9))
-                              : item.isFullReportAvailable
-                              ? const Color(0xFFDCFCE7)
-                              : const Color(0xFFFEF3C7),
+                              : const Color(0xFFDCFCE7),
                           textColor: !item.hasReport
                               ? (item.readyForAnalyze
                                     ? const Color(0xFFB45309)
                                     : const Color(0xFF64748B))
-                              : item.isFullReportAvailable
-                              ? const Color(0xFF15803D)
-                              : const Color(0xFFB45309),
+                              : const Color(0xFF15803D),
                         ),
                       ],
                     ),

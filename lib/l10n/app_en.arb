@@ -6,7 +6,6 @@
   "commonSave": "Save",
   "commonClose": "Close",
   "commonRetry": "Retry",
-  "commonDelete": "Delete",
   "commonContinue": "Continue",
   "commonBack": "Back",
   "commonLoading": "Loading...",
@@ -37,13 +36,6 @@
   "profileNotProvided": "Not provided",
   "profileReferralCodeLabel": "Referral code",
   "profileCopyLabel": "Copy",
-  "profileSectionSubscription": "SUBSCRIPTION",
-  "profileProPackage": "Pro package",
-  "profileNoActiveSubscription": "No active subscription",
-  "profileActiveBadge": "Active",
-  "profileCardsLabel": "Cards",
-  "profilePaymentCards": "Payment cards",
-  "profilePaymentHistory": "Payment history",
   "profileSectionNotifications": "NOTIFICATIONS",
   "profilePushNotifications": "Push notifications",
   "profileStreakReminder": "Streak reminder",
@@ -54,19 +46,6 @@
   "profileSectionOther": "OTHER",
   "profileDeleteAccount": "Delete account",
   "profileDeleteAccountWarning": "This action cannot be undone",
-  "profileSubscriptionActive": "Active until {date} · {days} days left",
-  "@profileSubscriptionActive": {
-    "placeholders": {
-      "date": { "type": "String" },
-      "days": { "type": "int" }
-    }
-  },
-  "profileSubscriptionExpired": "Active until {date} · expired",
-  "@profileSubscriptionExpired": {
-    "placeholders": {
-      "date": { "type": "String" }
-    }
-  },
 
   "navTabChat": "Chat",
   "navTabCourses": "Course",
@@ -139,8 +118,6 @@
   "homeIntroBattleDescription": "Test your vocabulary against other students in real time. Win and climb to the top of the leaderboard!",
   "homeIntroWritingTitle": "AI Writing Task",
   "homeIntroWritingDescription": "Improve your writing skills with the help of artificial intelligence. Complete tasks and get detailed feedback.",
-  "homeIntroCashbackTitle": "Cashback",
-  "homeIntroCashbackDescription": "Earn cashback for every lesson and assignment. Use your accumulated cashback on future payments.",
   "homeGreetingWithName": "Hi, {firstName} 👋",
   "@homeGreetingWithName": {
     "placeholders": { "firstName": { "type": "String" } }
@@ -150,16 +127,7 @@
   "homeSeeMoreAction": "Details →",
   "homeChatSectionTitle": "Chat with AI",
   "homeWritingSectionTitle": "AI Writing Task",
-  "homeCashbackSectionTitle": "Cashback",
   "homeGrowthSectionTitle": "My progress in numbers",
-  "homeCashbackTotalLabel": "Total cashback",
-  "homeCurrencySom": "UZS",
-  "homeCashbackBadgeLabel": "Cashback",
-  "homeCashbackReadyToClaim": "Ready to claim: {amount}",
-  "@homeCashbackReadyToClaim": {
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "homeCashbackReferralHint": "Earn new cashback by referring a friend",
   "homeDictionaryCardTitle": "Dictionary",
   "homeDictionaryCardSubtitle": "Search words in English and Uzbek,\nfind their meaning instantly",
   "homeDictionaryBadgeLabel": "DICTIONARY",
@@ -391,6 +359,11 @@
   "authEmailInvalidError": "Invalid email",
   "authPasswordRequiredError": "Enter your password",
   "authPasswordMinLengthError": "At least 6 characters",
+  "authIdentifyTitleStart": "Log in or",
+  "authIdentifyTitleAccent": "sign up",
+  "authIdentifySubtitle": "Enter your phone number or email",
+  "authCheckingLabel": "Checking...",
+  "authChangeIdentifierLabel": "Change",
   "authLoginTitleStart": "Welcome",
   "authLoginTitleAccent": "back",
   "authLoginSubtitle": "Enter your details to access your account",
@@ -403,8 +376,6 @@
   "authForgotPasswordLabel": "Forgot your password?",
   "authLoginLoadingLabel": "Please wait...",
   "authLoginSubmitLabel": "Sign in  →",
-  "authNoAccountPrompt": "Don't have an account?",
-  "authSignUpLinkLabel": "Sign up",
   "authNameRequiredError": "Enter your name",
   "authNameTooShortError": "Name is too short",
   "authRegisterTitleStart": "Create your",
@@ -418,8 +389,6 @@
   "authRegisterLoadingLabel": "Submitting...",
   "authContinueButtonLabel": "Continue  →",
   "authTermsAgreementText": "By continuing you agree to the Terms of Use and Privacy Policy",
-  "authHasAccountPrompt": "Already have an account?",
-  "authLoginLinkLabel": "Sign in",
   "authPhoneTabLabel": "Phone",
   "authEmailTabLabel": "Email",
   "authPhoneCountryPrefix": "+998",
@@ -465,30 +434,10 @@
     "placeholders": { "date": { "type": "String" } }
   },
   "myMentorChatButton": "Chat",
-  "coursesMentorBadge": "With mentor",
-  "coursesSelectDurationLabel": "Select duration",
-  "coursesWhatsIncludedLabel": "What's included",
-  "coursesSubscribeButtonLabel": "Subscribe · {price}",
-  "@coursesSubscribeButtonLabel": {
-    "placeholders": { "price": { "type": "String" } }
-  },
-  "coursesDefaultPlanName": "Plan",
-  "coursesMonthsShort": "{count} mo",
-  "@coursesMonthsShort": {
-    "placeholders": { "count": { "type": "int" } }
-  },
   "coursesLoadError": "Failed to load courses",
   "coursesTitle": "Courses",
   "coursesSubtitle": "With a teacher or on your own — you choose",
   "coursesMyEnrolledSectionTitle": "My courses",
-  "coursesSubscriptionActiveLabel": "Subscription active",
-  "coursesSubscriptionStatus": "Until {date} · {days} days left",
-  "@coursesSubscriptionStatus": {
-    "placeholders": {
-      "date": { "type": "String" },
-      "days": { "type": "int" }
-    }
-  },
   "coursesMentorshipProgramBadge": "MENTORSHIP PROGRAM",
   "coursesTeacherHeroTitle": "Real accountability —\nreal results",
   "coursesTeacherHeroSubtitle": "Learn English 2x faster with a personal teacher. Weekly check-ins, daily direction.",
@@ -498,18 +447,6 @@
   "coursesTeacherFeature4": "Personal support via in-app chat",
   "coursesTeacherFeature5": "Full platform access (video, AI, tests)",
   "coursesTestimonialsDividerLabel": "WHAT STUDENTS SAY",
-  "coursesPricingDividerLabel": "PRICING",
-  "coursesTeacherSubscribedBadge": "You're enrolled in the teacher program",
-  "coursesPopularBadge": "POPULAR",
-  "coursesSelectButton": "Select",
-  "coursesMonthlySubscriptionLabel": "{count}-month subscription",
-  "@coursesMonthlySubscriptionLabel": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "coursesPerMonthPrice": "{price}/mo",
-  "@coursesPerMonthPrice": {
-    "placeholders": { "price": { "type": "String" } }
-  },
   "coursesPlatformBadge": "PLATFORM",
   "coursesPlatformHeroTitle": "At your own pace —\nto a professional level",
   "coursesPlatformHeroSubtitle": "Success is possible without a teacher too. Learn on your own schedule with AI and video courses.",
@@ -522,7 +459,6 @@
   "coursesFeatureMockTestsTitle": "Mock Tests",
   "coursesFeatureIeltsCefr": "IELTS & CEFR",
   "coursesLevelsDividerLabel": "LEVELS",
-  "coursesPlatformSubscribedBadge": "You're on the platform subscription",
   "coursesTestimonial1Result": "IELTS 6.5",
   "coursesTestimonial1Duration": "in 3 months",
   "coursesTestimonial1Text": "I couldn't have reached this result without a teacher. The weekly session isn't just a lesson — it's accountability.",
@@ -631,38 +567,6 @@
   "cashbackNewTitle": "New cashback",
   "cashbackNewSubtitle": "You received a payment",
   "cashbackCurrencySuffix": "UZS",
-  "cashbackHowItWorksTitle": "How do you earn cashback?",
-  "cashbackHistoryTitle": "History",
-  "cashbackSectionLabel": "Cashback",
-  "cashbackTotalBalanceLabel": "Total cashback balance",
-  "cashbackReadyToClaim": "Ready to claim: {amount}",
-  "@cashbackReadyToClaim": {
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "cashbackCriterionRegisterTitle": "For signing up",
-  "cashbackCriterionRegisterSubtitle": "One-time welcome bonus",
-  "cashbackCriterionReferralTitle": "When a friend signs up via your referral",
-  "cashbackCriterionReferralSubtitle": "Share your referral code",
-  "cashbackCriterionPaymentTitle": "From every payment you make",
-  "cashbackCriterionPaymentSubtitle": "Automatic when you purchase a subscription",
-  "cashbackCriterionReferralPaymentTitle": "When your friend makes a payment",
-  "cashbackCriterionReferralPaymentSubtitle": "When the friend you referred pays",
-  "cashbackCriterionStreakTitle": "For completing your weekly streak",
-  "cashbackCriterionStreakSubtitle": "When you hit the goal each week",
-  "cashbackHistoryLoadError": "Couldn't load history",
-  "cashbackHistoryEmpty": "No cashback transactions yet",
-  "cashbackMonthJan": "Jan",
-  "cashbackMonthFeb": "Feb",
-  "cashbackMonthMar": "Mar",
-  "cashbackMonthApr": "Apr",
-  "cashbackMonthMay": "May",
-  "cashbackMonthJun": "Jun",
-  "cashbackMonthJul": "Jul",
-  "cashbackMonthAug": "Aug",
-  "cashbackMonthSep": "Sep",
-  "cashbackMonthOct": "Oct",
-  "cashbackMonthNov": "Nov",
-  "cashbackMonthDec": "Dec",
 
   "speakingScreenNoReportYet": "This conversation doesn't have a report yet",
   "speakingScreenReportNotFound": "Report not found",
@@ -673,7 +577,6 @@
   "speakingScreenStatusReady": "Ready",
   "speakingScreenStatusNotEnough": "Not enough",
   "speakingScreenStatusFullReport": "Full report",
-  "speakingScreenStatusPartialReport": "Partial view",
   "speakingScreenMonthJanuary": "January",
   "speakingScreenMonthFebruary": "February",
   "speakingScreenMonthMarch": "March",
@@ -686,32 +589,7 @@
   "speakingScreenMonthOctober": "October",
   "speakingScreenMonthNovember": "November",
   "speakingScreenMonthDecember": "December",
-  "speakingScreenAddonPurchaseTitle": "+{addonGrant} extra conversations",
-  "@speakingScreenAddonPurchaseTitle": {
-    "placeholders": { "addonGrant": { "type": "int" } }
-  },
-  "speakingScreenPaymentFailed": "Couldn't complete the payment",
   "speakingScreenLimitTitle": "You've reached your conversation limit ✨",
-  "speakingScreenLimitSubtitle": "Your free conversations are used up. Get an add-on pack to keep going, or upgrade to Pro.",
-  "speakingScreenPlanFeaturesLabel": "What's included in the plans:",
-  "speakingScreenBenefitUnlimitedTitle": "Unlimited AI conversation",
-  "speakingScreenBenefitUnlimitedSubtitle": "One day, one week — never stop practicing.",
-  "speakingScreenBenefitReportsTitle": "Detailed reports",
-  "speakingScreenBenefitReportsSubtitle": "Pronunciation, grammar, vocabulary — your strengths and weaknesses.",
-  "speakingScreenBenefitMentorTitle": "With a real mentor",
-  "speakingScreenBenefitMentorSubtitle": "Ask questions in chat, make a call — right next to a real teacher.",
-  "speakingScreenBenefitResultTitle": "Faster results",
-  "speakingScreenBenefitResultSubtitle": "A new level in a month. Feel what you've learned by speaking it.",
-  "speakingScreenSocialProof": "Thousands of students are falling in love with English through Pro.",
-  "speakingScreenAddonButtonLabel": "{price} UZS → +{grant} conversations",
-  "@speakingScreenAddonButtonLabel": {
-    "placeholders": {
-      "price": { "type": "String" },
-      "grant": { "type": "int" }
-    }
-  },
-  "speakingScreenSubscribeButton": "Subscribe to Pro",
-  "speakingScreenDismissLater": "I'll come back later",
   "speakingScreenGrammarCoachSubtitle": "On grammar",
   "speakingScreenRoadmapCoachSubtitle": "{count} priority tips",
   "@speakingScreenRoadmapCoachSubtitle": {
@@ -758,44 +636,7 @@
   "speakingScreenTabVocabulary": "Vocabulary",
   "speakingScreenTabGrammar": "Grammar",
   "speakingScreenTabRoadmap": "Roadmap",
-  "speakingScreenPaymentSuccess": "Payment successful — report unlocked",
-  "speakingScreenPaymentChecking": "Checking payment…",
-  "speakingScreenPaymentAutoUnlock": "The report unlocks automatically once confirmed",
-  "speakingScreenUnlimitedReportsTitle": "Unlimited full reports",
-  "speakingScreenUnlimitedReportsSubtitle": "Subscribe to Pro — get unlimited reports",
 
-  "profileAddCardInvalidDataError": "Card details are incorrect",
-  "profileAddCardNotFoundError": "Card not found",
-  "profileAddCardGenericError": "Something went wrong",
-  "profileAddCardNumberRequired": "Enter the card number",
-  "profileAddCardNumberLengthError": "Must be 16 digits",
-  "profileAddCardExpiryRequired": "Enter the expiry date",
-  "profileAddCardExpiryInvalidMonth": "Invalid month",
-  "profileAddCardPhoneRequired": "Enter your phone number",
-  "profileAddCardPhoneLengthError": "Must be 9 digits",
-  "profileAddCardOtpRequired": "Enter the code",
-  "profileAddCardOtpLengthError": "Enter 6 digits",
-  "profileAddCardAction": "Add card",
-  "profileAddCardNumberLabel": "CARD NUMBER",
-  "profileAddCardPhoneLabel": "PHONE NUMBER",
-  "profileAddCardExpiryLabel": "EXPIRY",
-  "profileAddCardContinueButton": "Continue",
-  "profileAddCardOtpTitle": "Verification code",
-  "profileAddCardOtpSentMessage": "A verification code was sent to {phone}",
-  "@profileAddCardOtpSentMessage": {
-    "placeholders": { "phone": { "type": "String" } }
-  },
-  "profileAddCardOtpLabel": "VERIFICATION CODE",
-  "profileAddCardConfirmButton": "Confirm",
-  "profileCardsTitle": "My cards",
-  "profileCardsLoadError": "Cards failed to load",
-  "profileDeleteCardTitle": "Delete card",
-  "profileDeleteCardConfirmMessage": "Delete card {maskedNumber}?",
-  "@profileDeleteCardConfirmMessage": {
-    "placeholders": { "maskedNumber": { "type": "String" } }
-  },
-  "profileNoCardsTitle": "No cards",
-  "profileNoCardsSubtitle": "Add your payment card",
   "profileOldPasswordRequired": "Enter your old password",
   "profileNewPasswordMinLengthError": "New password must be at least 6 characters",
   "profilePasswordsMismatchError": "Passwords don't match",
@@ -807,48 +648,6 @@
   "profileNameRequired": "Enter your name",
   "profileSaveError": "Couldn't save",
   "profileEditInfoTitle": "Edit info",
-  "profilePaymentCreatedViaType": "Payment created via {title} · {price}",
-  "@profilePaymentCreatedViaType": {
-    "placeholders": {
-      "title": { "type": "String" },
-      "price": { "type": "String" }
-    }
-  },
-  "profilePaymentCreateError": "Couldn't create the payment",
-  "profileCardPaymentSuccessMessage": "Card payment completed · {price}",
-  "@profileCardPaymentSuccessMessage": {
-    "placeholders": { "price": { "type": "String" } }
-  },
-  "profileCardPaymentError": "Card payment failed",
-  "profilePaymentMethodsLoadError": "Couldn't load payment methods",
-  "profileSavedCardsLabel": "Saved cards",
-  "profileOtherPaymentMethodsLabel": "Other payment methods",
-  "profileSelectPaymentMethodTitle": "Choose a payment method",
-  "profileGenericCardLabel": "Card",
-  "profilePaymentFallbackTitle": "Payment",
-  "profileSubscriptionTitle": "Subscription",
-  "profileAvailablePlansLabel": "Available plans",
-  "profilePlansLoadError": "Couldn't load plans",
-  "profileNoPlansFound": "No plans found",
-  "profileSubscriptionStartedLabel": "Started",
-  "profileSubscriptionEndsLabel": "Ends",
-  "profileSubscriptionRemainingLabel": "Remaining",
-  "profileDaysCount": "{count} days",
-  "@profileDaysCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "profileNoSubscriptionMessage": "You don't have an active subscription yet. Choose one of the plans below.",
-  "profileInactiveBadge": "Inactive",
-  "profilePlanFallbackName": "Plan",
-  "profileMonthsCount": "{count} mo",
-  "@profileMonthsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "profileMentorBadge": "Mentor",
-  "profileSubscribeButtonLabel": "Subscribe · {price}",
-  "@profileSubscribeButtonLabel": {
-    "placeholders": { "price": { "type": "String" } }
-  },
   "profileUserLevelBadge": "B1 Level",
 
   "dictionaryLoadError": "Failed to load",
@@ -1043,7 +842,6 @@
   "vocabularyDefinitionPreparing": "Preparing the definition…",
   "vocabularyExampleLabel": "EXAMPLE SENTENCE",
 
-  "speakingReportLockedCardOpenLabel": "Open",
   "speakingReportMonthlyPlanMonthLabel": "MONTH {index}",
   "@speakingReportMonthlyPlanMonthLabel": {
     "placeholders": { "index": { "type": "int" } }
@@ -1124,13 +922,5 @@
       "active": { "type": "String" },
       "target": { "type": "String" }
     }
-  },
-  "speakingReportUnlockPaymentTitle": "Unlock report",
-  "speakingReportUnlockTitle": "Unlock the full report",
-  "speakingReportUnlockDescription": "One-time payment — all locked details of this report unlock just for this report. ",
-  "speakingReportUnlockPriceCardLabel": "For this report",
-  "speakingReportUnlockOneTimePayment": "One-time payment",
-  "speakingReportUnlockPayButton": "Pay",
-  "speakingReportUnlockUnlimitedButton": "Unlimited reports — subscribe",
-  "speakingReportUnlockCurrencySom": "UZS"
+  }
 }

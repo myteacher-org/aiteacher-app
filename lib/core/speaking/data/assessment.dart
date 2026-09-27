@@ -13,7 +13,6 @@ class Assessment {
     required this.coachTips,
     this.audio,
     this.audioMimeType,
-    this.isFullReportAvailable = true,
     this.conversationId,
   });
 
@@ -31,15 +30,10 @@ class Assessment {
   final String? audio;
   final String? audioMimeType;
 
-  /// Server flag. When false, the report should obscure detail cards behind
-  /// a paywall (only the first card in each tab stays visible).
-  final bool isFullReportAvailable;
-
-  /// Server conversation id this report belongs to. Carried so the
-  /// unlock/payment flow can attach a payment to the right conversation.
+  /// Server conversation id this report belongs to.
   final String? conversationId;
 
-  Assessment copyWith({bool? isFullReportAvailable, String? conversationId}) {
+  Assessment copyWith({String? conversationId}) {
     return Assessment(
       feedback: feedback,
       overallScore: overallScore,
@@ -54,8 +48,6 @@ class Assessment {
       coachTips: coachTips,
       audio: audio,
       audioMimeType: audioMimeType,
-      isFullReportAvailable:
-          isFullReportAvailable ?? this.isFullReportAvailable,
       conversationId: conversationId ?? this.conversationId,
     );
   }
@@ -90,7 +82,6 @@ class Assessment {
           .toList(growable: false),
       audio: json['audio'] as String?,
       audioMimeType: json['audioMimeType'] as String?,
-      isFullReportAvailable: json['isFullReportAvailable'] as bool? ?? true,
       conversationId: json['conversationId'] as String?,
     );
   }

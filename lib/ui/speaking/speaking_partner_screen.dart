@@ -6,8 +6,6 @@ import 'package:ai_teacher/core/speaking/data/speaking_repository.dart';
 import 'package:ai_teacher/core/speaking/presentation/speaking_controller.dart';
 import 'package:ai_teacher/core/student_activity/data/student_activity_socket.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
-import 'package:ai_teacher/ui/profile/subscription_details_sheet.dart';
-import 'package:ai_teacher/ui/speaking/limit_reached_sheet.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_avatar.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_controls.dart';
 import 'package:ai_teacher/ui/speaking/widget/partner_top_bar.dart';
@@ -48,28 +46,12 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
     }
   }
 
-  Future<void> _showConversationLimitSheet({
-    int addonPrice = 5000,
-    int addonGrant = 3,
-  }) async {
-    final action = await LimitReachedSheet.show(
-      context,
-      addonPrice: addonPrice,
-      addonGrant: addonGrant,
-    );
-    if (!mounted) return;
-    if (action == LimitSheetAction.addonPurchased) {
-      ref.invalidate(conversationLimitProvider);
-      ref.read(speakingControllerProvider.notifier).dismissLimit();
-      ref.read(speakingControllerProvider.notifier).resetError();
-    } else if (action == LimitSheetAction.wantsSubscribe) {
-      await SubscriptionDetailsSheet.show(context);
-      if (!mounted) return;
-      ref.invalidate(conversationLimitProvider);
-    } else {
-      ref.read(speakingControllerProvider.notifier).endConversation();
-      _onBack();
-    }
+  void _onConversationLimitReached() {
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.speakingScreenLimitTitle)));
+    _onBack();
   }
 
   String _formatDuration(Duration d) {
@@ -87,10 +69,7 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
       if (state.conversationId == null) {
         final limit = ref.read(conversationLimitProvider).valueOrNull;
         if (limit != null && limit.remaining == 0 && !limit.isUnlimited) {
-          await _showConversationLimitSheet(
-            addonPrice: limit.addonPrice,
-            addonGrant: limit.addonGrant,
-          );
+          _onConversationLimitReached();
           return;
         }
       }
@@ -122,16 +101,11 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
     ref.listen<SpeakingState>(speakingControllerProvider, (prev, next) {
       final wasLimited = prev?.limitReached ?? false;
       if (!wasLimited && next.limitReached) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (!mounted) return;
-          final limit = ref.read(conversationLimitProvider).valueOrNull;
-          await _showConversationLimitSheet(
-            addonPrice: limit?.addonPrice ?? 5000,
-            addonGrant: limit?.addonGrant ?? 3,
-          );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
           ref.read(speakingControllerProvider.notifier).dismissLimit();
           ref.read(speakingControllerProvider.notifier).resetError();
+          _onConversationLimitReached();
         });
       }
     });

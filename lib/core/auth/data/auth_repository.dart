@@ -18,6 +18,24 @@ class AuthRepository {
   final Dio dio;
   final CacheService cache;
 
+  /// Returns whether an account with this phone number or email exists, so
+  /// the app can choose between the sign-in and sign-up flow.
+  Future<bool> exists({String? phoneNumber, String? email}) async {
+    assert(
+      (phoneNumber != null) ^ (email != null),
+      'Provide exactly one of phoneNumber or email',
+    );
+    try {
+      final response = await dio.post<Map<String, dynamic>>(
+        phoneNumber != null ? 'auth/exists/phone' : 'auth/exists/email',
+        data: {'phoneNumber': ?phoneNumber, 'email': ?email},
+      );
+      return response.data?['exists'] == true;
+    } on DioException catch (e) {
+      throw AuthException.fromDio(e);
+    }
+  }
+
   Future<OtpRequestResult> requestOtp({
     String? phoneNumber,
     String? email,

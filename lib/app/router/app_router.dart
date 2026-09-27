@@ -3,9 +3,8 @@ import 'package:ai_teacher/core/auth/data/auth_dtos.dart';
 import 'package:ai_teacher/core/course/data/course_dtos.dart';
 import 'package:ai_teacher/core/promo/data/promo_dtos.dart';
 import 'package:ai_teacher/core/speaking/data/assessment.dart';
-import 'package:ai_teacher/ui/auth/login_screen.dart';
+import 'package:ai_teacher/ui/auth/auth_screen.dart';
 import 'package:ai_teacher/ui/auth/otp_screen.dart';
-import 'package:ai_teacher/ui/auth/register_screen.dart';
 import 'package:ai_teacher/core/timetable/data/timetable_dtos.dart';
 import 'package:ai_teacher/ui/battle/battle_screen.dart';
 import 'package:ai_teacher/ui/booking/booking_confirm_screen.dart';
@@ -64,26 +63,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SurveyScreen(),
       ),
       GoRoute(
-        path: AppRoute.register.path,
-        name: AppRoute.register.name,
+        path: AppRoute.login.path,
+        name: AppRoute.login.name,
         builder: (context, state) {
           final extra = state.extra;
-          return RegisterScreen(
+          return AuthScreen(
             surveyAnswers: extra is SurveyAnswers ? extra : null,
           );
         },
-      ),
-      GoRoute(
-        path: AppRoute.login.path,
-        name: AppRoute.login.name,
-        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoute.otp.path,
         name: AppRoute.otp.name,
         builder: (context, state) {
           if (state.extra is! RegistrationDraft) {
-            return const RegisterScreen();
+            return const AuthScreen();
           }
           return OtpScreen(draft: state.extra as RegistrationDraft);
         },
@@ -243,7 +237,6 @@ enum AppRoute {
   languageSelect('/language-select'),
   onboarding('/'),
   survey('/survey'),
-  register('/register'),
   login('/login'),
   otp('/otp'),
   main('/main'),

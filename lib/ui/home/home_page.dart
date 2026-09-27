@@ -1,12 +1,8 @@
 import 'package:ai_teacher/app/data/cache_service.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
-import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/l10n/generated/app_localizations.dart';
-import 'package:ai_teacher/ui/cashback/cashback_info_sheet.dart';
-import 'package:ai_teacher/ui/home/widget/book_demo_card.dart';
-import 'package:ai_teacher/ui/home/widget/cashback_card.dart';
 import 'package:ai_teacher/ui/home/widget/dictionary_card.dart';
 import 'package:ai_teacher/ui/home/widget/home_header.dart';
 import 'package:ai_teacher/ui/home/widget/live_card.dart';
@@ -35,7 +31,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   final _vocabKey = GlobalKey();
   final _battleKey = GlobalKey();
   final _writingTaskKey = GlobalKey();
-  final _cashbackKey = GlobalKey();
 
   OverlayEntry? _introEntry;
 
@@ -89,14 +84,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         iconColor: const Color(0xFF7C3AED),
         iconBackground: const Color(0xFFF5F3FF),
       ),
-      IntroStep(
-        targetKey: _cashbackKey,
-        title: l10n.homeIntroCashbackTitle,
-        description: l10n.homeIntroCashbackDescription,
-        icon: Icons.account_balance_wallet_rounded,
-        iconColor: const Color(0xFF059669),
-        iconBackground: const Color(0xFFECFDF5),
-      ),
     ];
 
     _introEntry = OverlayEntry(
@@ -146,9 +133,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   ),
                 ),
-                ref.watch(myMentorProvider).valueOrNull == null
-                    ? const BookDemoCard()
-                    : const RadarCard(),
+                const RadarCard(),
                 SectionHeader(
                   title: l10n.homeStreakSectionTitle,
                   actionLabel: l10n.homeSeeMoreAction,
@@ -168,15 +153,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                 WritingTaskCard(
                   key: _writingTaskKey,
                   onStart: () => context.pushNamed(AppRoute.writingTask.name),
-                ),
-                SectionHeader(
-                  title: l10n.homeCashbackSectionTitle,
-                  actionLabel: l10n.homeSeeMoreAction,
-                  onAction: () => CashbackInfoSheet.show(context),
-                ),
-                CashbackCard(
-                  key: _cashbackKey,
-                  onTap: () => CashbackInfoSheet.show(context),
                 ),
                 SectionHeader(title: l10n.homeGrowthSectionTitle),
                 const StatsCard(),

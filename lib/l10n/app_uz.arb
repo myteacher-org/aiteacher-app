@@ -6,7 +6,6 @@
   "commonSave": "Saqlash",
   "commonClose": "Yopish",
   "commonRetry": "Qayta urinish",
-  "commonDelete": "O'chirish",
   "commonContinue": "Davom etish",
   "commonBack": "Orqaga",
   "commonLoading": "Yuklanmoqda...",
@@ -37,13 +36,6 @@
   "profileNotProvided": "Kiritilmagan",
   "profileReferralCodeLabel": "Referal kod",
   "profileCopyLabel": "Nusxa",
-  "profileSectionSubscription": "OBUNA",
-  "profileProPackage": "Pro paket",
-  "profileNoActiveSubscription": "Faol obuna yo'q",
-  "profileActiveBadge": "Faol",
-  "profileCardsLabel": "Kartalar",
-  "profilePaymentCards": "To'lov kartalari",
-  "profilePaymentHistory": "To'lov tarixi",
   "profileSectionNotifications": "BILDIRISHNOMALAR",
   "profilePushNotifications": "Push xabarnomalar",
   "profileStreakReminder": "Streak eslatmasi",
@@ -54,19 +46,6 @@
   "profileSectionOther": "BOSHQA",
   "profileDeleteAccount": "Hisobni o'chirish",
   "profileDeleteAccountWarning": "Bu amalni qaytarib bo'lmaydi",
-  "profileSubscriptionActive": "{date} gacha faol · {days} kun qoldi",
-  "@profileSubscriptionActive": {
-    "placeholders": {
-      "date": { "type": "String" },
-      "days": { "type": "int" }
-    }
-  },
-  "profileSubscriptionExpired": "{date} gacha faol · tugadi",
-  "@profileSubscriptionExpired": {
-    "placeholders": {
-      "date": { "type": "String" }
-    }
-  },
 
   "navTabChat": "Chat",
   "navTabCourses": "Kurs",
@@ -139,8 +118,6 @@
   "homeIntroBattleDescription": "Boshqa o'quvchilar bilan real vaqtda so'z bilimingizni sinab ko'ring. G'olib bo'ling va reytingda tepaga chiqing!",
   "homeIntroWritingTitle": "AI Writing Task",
   "homeIntroWritingDescription": "Yozish ko'nikmangizni sun'iy intellekt yordamida rivojlantiring. Topshiriqlarni bajaring va batafsil fikr-mulohaza oling.",
-  "homeIntroCashbackTitle": "Cashback",
-  "homeIntroCashbackDescription": "Har bir dars va topshiriq uchun cashback yig'ing. To'plangan cashbackni keyingi to'lovlarda ishlating.",
   "homeGreetingWithName": "Salom, {firstName} 👋",
   "@homeGreetingWithName": {
     "placeholders": { "firstName": { "type": "String" } }
@@ -150,16 +127,7 @@
   "homeSeeMoreAction": "Batafsil →",
   "homeChatSectionTitle": "AI bilan suhbat",
   "homeWritingSectionTitle": "AI Writing Task",
-  "homeCashbackSectionTitle": "Cashback",
   "homeGrowthSectionTitle": "Mening o'sishim raqamlarda",
-  "homeCashbackTotalLabel": "Jami cashback",
-  "homeCurrencySom": "so'm",
-  "homeCashbackBadgeLabel": "Cashback",
-  "homeCashbackReadyToClaim": "Olishga tayyor: {amount}",
-  "@homeCashbackReadyToClaim": {
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "homeCashbackReferralHint": "Yangi cashback'larni do'st referal qilib oling",
   "homeDictionaryCardTitle": "Lug'at",
   "homeDictionaryCardSubtitle": "Ingliz va o'zbek tilida so'zlarni qidiring,\nma'nosini bir zumda toping",
   "homeDictionaryBadgeLabel": "LUG'AT",
@@ -391,6 +359,11 @@
   "authEmailInvalidError": "Email noto'g'ri",
   "authPasswordRequiredError": "Parolni kiriting",
   "authPasswordMinLengthError": "Kamida 6 ta belgi",
+  "authIdentifyTitleStart": "Kirish yoki",
+  "authIdentifyTitleAccent": "ro'yxatdan o'tish",
+  "authIdentifySubtitle": "Telefon raqamingiz yoki emailingizni kiriting",
+  "authCheckingLabel": "Tekshirilmoqda...",
+  "authChangeIdentifierLabel": "O'zgartirish",
   "authLoginTitleStart": "Xush",
   "authLoginTitleAccent": "kelibsiz",
   "authLoginSubtitle": "Hisobingizga kirish uchun ma'lumotlaringizni kiriting",
@@ -403,8 +376,6 @@
   "authForgotPasswordLabel": "Parolni unutdingizmi?",
   "authLoginLoadingLabel": "Kuting...",
   "authLoginSubmitLabel": "Kirish  →",
-  "authNoAccountPrompt": "Hisobingiz yo'qmi?",
-  "authSignUpLinkLabel": "Ro'yxatdan o'tish",
   "authNameRequiredError": "Ismingizni kiriting",
   "authNameTooShortError": "Ism juda qisqa",
   "authRegisterTitleStart": "Hisobingizni",
@@ -418,8 +389,6 @@
   "authRegisterLoadingLabel": "Yuborilmoqda...",
   "authContinueButtonLabel": "Davom etish  →",
   "authTermsAgreementText": "Davom etish orqali Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz",
-  "authHasAccountPrompt": "Hisobingiz bormi?",
-  "authLoginLinkLabel": "Kirish",
   "authPhoneTabLabel": "Telefon",
   "authEmailTabLabel": "Email",
   "authPhoneCountryPrefix": "+998",
@@ -465,30 +434,10 @@
     "placeholders": { "date": { "type": "String" } }
   },
   "myMentorChatButton": "Suhbat",
-  "coursesMentorBadge": "Mentor bilan",
-  "coursesSelectDurationLabel": "Muddat tanlang",
-  "coursesWhatsIncludedLabel": "Nima kiradi",
-  "coursesSubscribeButtonLabel": "Obuna bo'lish · {price}",
-  "@coursesSubscribeButtonLabel": {
-    "placeholders": { "price": { "type": "String" } }
-  },
-  "coursesDefaultPlanName": "Tarif",
-  "coursesMonthsShort": "{count} oy",
-  "@coursesMonthsShort": {
-    "placeholders": { "count": { "type": "int" } }
-  },
   "coursesLoadError": "Kurslarni yuklashda xatolik",
   "coursesTitle": "Kurslar",
   "coursesSubtitle": "O'qituvchi bilan yoki mustaqil — siz tanlaysiz",
   "coursesMyEnrolledSectionTitle": "Mening kurslarim",
-  "coursesSubscriptionActiveLabel": "Obuna faol",
-  "coursesSubscriptionStatus": "{date} gacha · {days} kun qoldi",
-  "@coursesSubscriptionStatus": {
-    "placeholders": {
-      "date": { "type": "String" },
-      "days": { "type": "int" }
-    }
-  },
   "coursesMentorshipProgramBadge": "MENTORLIK DASTURI",
   "coursesTeacherHeroTitle": "Haqiqiy nazorat —\nhaqiqiy natija",
   "coursesTeacherHeroSubtitle": "Shaxsiy o'qituvchi bilan ingliz tilini 2x tezroq o'rganing. Har hafta nazorat, har kuni yo'nalish.",
@@ -498,18 +447,6 @@
   "coursesTeacherFeature4": "Ilovada shaxsiy chat orqali qo'llab-quvvatlash",
   "coursesTeacherFeature5": "To'liq platforma imkoniyatlari (video, AI, testlar)",
   "coursesTestimonialsDividerLabel": "O'QUVCHILAR AYTADI",
-  "coursesPricingDividerLabel": "NARXLAR",
-  "coursesTeacherSubscribedBadge": "Siz o'qituvchi dasturiga ulanganisiz",
-  "coursesPopularBadge": "MASHHUR",
-  "coursesSelectButton": "Tanlash",
-  "coursesMonthlySubscriptionLabel": "{count} oylik obuna",
-  "@coursesMonthlySubscriptionLabel": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "coursesPerMonthPrice": "{price}/oy",
-  "@coursesPerMonthPrice": {
-    "placeholders": { "price": { "type": "String" } }
-  },
   "coursesPlatformBadge": "PLATFORMA",
   "coursesPlatformHeroTitle": "O'z tezligingizda —\nprofessional darajaga",
   "coursesPlatformHeroSubtitle": "O'qituvchisiz ham muvaffaqiyat mumkin. AI va video kurslar bilan o'z jadvalingizda o'rganing.",
@@ -522,7 +459,6 @@
   "coursesFeatureMockTestsTitle": "Mock Testlar",
   "coursesFeatureIeltsCefr": "IELTS & CEFR",
   "coursesLevelsDividerLabel": "DARAJALAR",
-  "coursesPlatformSubscribedBadge": "Siz platforma obunasida",
   "coursesTestimonial1Result": "IELTS 6.5",
   "coursesTestimonial1Duration": "3 oyda",
   "coursesTestimonial1Text": "O'qituvchi bo'lmaganida bu natijaga yeta olmas edim. Har haftadagi sessiya — bu shunchaki dars emas, bu javobgarlik.",
@@ -631,38 +567,6 @@
   "cashbackNewTitle": "Yangi cashback",
   "cashbackNewSubtitle": "Sizga to'lov kelib tushdi",
   "cashbackCurrencySuffix": "so'm",
-  "cashbackHowItWorksTitle": "Qanday cashback yig'iladi?",
-  "cashbackHistoryTitle": "Tarix",
-  "cashbackSectionLabel": "Cashback",
-  "cashbackTotalBalanceLabel": "Jami cashback balansi",
-  "cashbackReadyToClaim": "Olishga tayyor: {amount}",
-  "@cashbackReadyToClaim": {
-    "placeholders": { "amount": { "type": "String" } }
-  },
-  "cashbackCriterionRegisterTitle": "Ro'yxatdan o'tganingiz uchun",
-  "cashbackCriterionRegisterSubtitle": "Bir martalik kirish bonusi",
-  "cashbackCriterionReferralTitle": "Har bir do'stingiz referal orqali ro'yxatdan o'tganda",
-  "cashbackCriterionReferralSubtitle": "Referal kodingizni ulashing",
-  "cashbackCriterionPaymentTitle": "Sizning har bir to'lovingizdan",
-  "cashbackCriterionPaymentSubtitle": "Obuna xarid qilganda avtomatik",
-  "cashbackCriterionReferralPaymentTitle": "Do'stingiz har bir to'lov qilganda",
-  "cashbackCriterionReferralPaymentSubtitle": "Referal qilgan do'stingiz to'laganda",
-  "cashbackCriterionStreakTitle": "Haftalik streak seriyasini yakunlaganingiz uchun",
-  "cashbackCriterionStreakSubtitle": "Har haftada maqsadni bajarsangiz",
-  "cashbackHistoryLoadError": "Tarixni yuklab bo'lmadi",
-  "cashbackHistoryEmpty": "Hali cashback operatsiyalari yo'q",
-  "cashbackMonthJan": "yan",
-  "cashbackMonthFeb": "fev",
-  "cashbackMonthMar": "mar",
-  "cashbackMonthApr": "apr",
-  "cashbackMonthMay": "may",
-  "cashbackMonthJun": "iyn",
-  "cashbackMonthJul": "iyl",
-  "cashbackMonthAug": "avg",
-  "cashbackMonthSep": "sen",
-  "cashbackMonthOct": "okt",
-  "cashbackMonthNov": "noy",
-  "cashbackMonthDec": "dek",
 
   "speakingScreenNoReportYet": "Bu suhbatda hali hisobot yo'q",
   "speakingScreenReportNotFound": "Hisobot topilmadi",
@@ -673,7 +577,6 @@
   "speakingScreenStatusReady": "Tayyor",
   "speakingScreenStatusNotEnough": "Yetarli emas",
   "speakingScreenStatusFullReport": "To'liq hisobot",
-  "speakingScreenStatusPartialReport": "Qisman ko'rinadi",
   "speakingScreenMonthJanuary": "yanvar",
   "speakingScreenMonthFebruary": "fevral",
   "speakingScreenMonthMarch": "mart",
@@ -686,32 +589,7 @@
   "speakingScreenMonthOctober": "oktabr",
   "speakingScreenMonthNovember": "noyabr",
   "speakingScreenMonthDecember": "dekabr",
-  "speakingScreenAddonPurchaseTitle": "+{addonGrant} ta qo'shimcha suhbat",
-  "@speakingScreenAddonPurchaseTitle": {
-    "placeholders": { "addonGrant": { "type": "int" } }
-  },
-  "speakingScreenPaymentFailed": "To'lovni amalga oshirib bo'lmadi",
   "speakingScreenLimitTitle": "Suhbat limitingiz tugadi ✨",
-  "speakingScreenLimitSubtitle": "Bepul suhbatlar sarflandi. Davom etish uchun qo'shimcha paket oling yoki Pro paketga o'ting.",
-  "speakingScreenPlanFeaturesLabel": "Planlarga kiritilgan imkoniyatlar:",
-  "speakingScreenBenefitUnlimitedTitle": "Cheksiz AI suhbat",
-  "speakingScreenBenefitUnlimitedSubtitle": "Bir kun, bir hafta — mashqlar to'xtamasin.",
-  "speakingScreenBenefitReportsTitle": "Batafsil hisobotlar",
-  "speakingScreenBenefitReportsSubtitle": "Talaffuz, grammatika, lug'at — sizning kuchli va zaif tomonlaringiz.",
-  "speakingScreenBenefitMentorTitle": "Tirik mentor bilan",
-  "speakingScreenBenefitMentorSubtitle": "Chatda savol bering, qo'ng'iroq qiling — real ustoz yonida.",
-  "speakingScreenBenefitResultTitle": "Tezroq natija",
-  "speakingScreenBenefitResultSubtitle": "Bir oyda — yangi daraja. O'rganganlaringizni gapirib his qiling.",
-  "speakingScreenSocialProof": "Minglab o'quvchilar Pro orqali ingliz tilini sevib o'rganmoqda.",
-  "speakingScreenAddonButtonLabel": "{price} so'm → +{grant} ta suhbat",
-  "@speakingScreenAddonButtonLabel": {
-    "placeholders": {
-      "price": { "type": "String" },
-      "grant": { "type": "int" }
-    }
-  },
-  "speakingScreenSubscribeButton": "Pro paketga obuna bo'lish",
-  "speakingScreenDismissLater": "Keyinroq qaytaman",
   "speakingScreenGrammarCoachSubtitle": "Grammar bo'yicha",
   "speakingScreenRoadmapCoachSubtitle": "{count} ta ustuvor tavsiya",
   "@speakingScreenRoadmapCoachSubtitle": {
@@ -758,44 +636,7 @@
   "speakingScreenTabVocabulary": "Lug'at",
   "speakingScreenTabGrammar": "Grammatika",
   "speakingScreenTabRoadmap": "Yo'l xarita",
-  "speakingScreenPaymentSuccess": "To'lov muvaffaqiyatli — hisobot ochildi",
-  "speakingScreenPaymentChecking": "To'lov tekshirilmoqda…",
-  "speakingScreenPaymentAutoUnlock": "Tasdiqlangach hisobot avtomatik ochiladi",
-  "speakingScreenUnlimitedReportsTitle": "Cheksiz to'liq hisobotlar",
-  "speakingScreenUnlimitedReportsSubtitle": "Pro paketga obuna bo'ling — barcha hisobotlarni cheksiz oling",
 
-  "profileAddCardInvalidDataError": "Karta ma'lumotlari noto'g'ri",
-  "profileAddCardNotFoundError": "Karta topilmadi",
-  "profileAddCardGenericError": "Xatolik yuz berdi",
-  "profileAddCardNumberRequired": "Karta raqamini kiriting",
-  "profileAddCardNumberLengthError": "16 ta raqam bo'lishi kerak",
-  "profileAddCardExpiryRequired": "Amal qilish muddatini kiriting",
-  "profileAddCardExpiryInvalidMonth": "Noto'g'ri oy",
-  "profileAddCardPhoneRequired": "Telefon raqamini kiriting",
-  "profileAddCardPhoneLengthError": "9 ta raqam bo'lishi kerak",
-  "profileAddCardOtpRequired": "Kodni kiriting",
-  "profileAddCardOtpLengthError": "6 ta raqam kiriting",
-  "profileAddCardAction": "Karta qo'shish",
-  "profileAddCardNumberLabel": "KARTA RAQAMI",
-  "profileAddCardPhoneLabel": "TELEFON RAQAMI",
-  "profileAddCardExpiryLabel": "MUDDAT",
-  "profileAddCardContinueButton": "Davom etish",
-  "profileAddCardOtpTitle": "Tasdiqlash kodi",
-  "profileAddCardOtpSentMessage": "{phone} raqamiga tasdiqlash kodi yuborildi",
-  "@profileAddCardOtpSentMessage": {
-    "placeholders": { "phone": { "type": "String" } }
-  },
-  "profileAddCardOtpLabel": "TASDIQLASH KODI",
-  "profileAddCardConfirmButton": "Tasdiqlash",
-  "profileCardsTitle": "Kartalarim",
-  "profileCardsLoadError": "Kartalar yuklanmadi",
-  "profileDeleteCardTitle": "Kartani o'chirish",
-  "profileDeleteCardConfirmMessage": "{maskedNumber} kartasini o'chirishni tasdiqlaysizmi?",
-  "@profileDeleteCardConfirmMessage": {
-    "placeholders": { "maskedNumber": { "type": "String" } }
-  },
-  "profileNoCardsTitle": "Kartalar yo'q",
-  "profileNoCardsSubtitle": "To'lov kartangizni qo'shing",
   "profileOldPasswordRequired": "Eski parolni kiriting",
   "profileNewPasswordMinLengthError": "Yangi parol kamida 6 ta belgi bo'lishi kerak",
   "profilePasswordsMismatchError": "Parollar bir xil emas",
@@ -807,48 +648,6 @@
   "profileNameRequired": "Ismni kiriting",
   "profileSaveError": "Saqlashda xatolik",
   "profileEditInfoTitle": "Ma'lumotlarni tahrirlash",
-  "profilePaymentCreatedViaType": "{title} orqali to'lov yaratildi · {price}",
-  "@profilePaymentCreatedViaType": {
-    "placeholders": {
-      "title": { "type": "String" },
-      "price": { "type": "String" }
-    }
-  },
-  "profilePaymentCreateError": "To'lovni yaratib bo'lmadi",
-  "profileCardPaymentSuccessMessage": "Karta orqali to'lov amalga oshirildi · {price}",
-  "@profileCardPaymentSuccessMessage": {
-    "placeholders": { "price": { "type": "String" } }
-  },
-  "profileCardPaymentError": "Karta orqali to'lovda xatolik yuz berdi",
-  "profilePaymentMethodsLoadError": "To'lov usullarini yuklab bo'lmadi",
-  "profileSavedCardsLabel": "Saqlangan kartalar",
-  "profileOtherPaymentMethodsLabel": "Boshqa to'lov usullari",
-  "profileSelectPaymentMethodTitle": "To'lov usulini tanlang",
-  "profileGenericCardLabel": "Karta",
-  "profilePaymentFallbackTitle": "To'lov",
-  "profileSubscriptionTitle": "Obuna",
-  "profileAvailablePlansLabel": "Mavjud tariflar",
-  "profilePlansLoadError": "Tariflarni yuklab bo'lmadi",
-  "profileNoPlansFound": "Tariflar topilmadi",
-  "profileSubscriptionStartedLabel": "Boshlangan",
-  "profileSubscriptionEndsLabel": "Tugaydi",
-  "profileSubscriptionRemainingLabel": "Qolgan",
-  "profileDaysCount": "{count} kun",
-  "@profileDaysCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "profileNoSubscriptionMessage": "Hozircha faol obunangiz yo'q. Quyidagi tariflardan birini tanlang.",
-  "profileInactiveBadge": "Yo'q",
-  "profilePlanFallbackName": "Tarif",
-  "profileMonthsCount": "{count} oy",
-  "@profileMonthsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "profileMentorBadge": "Mentor",
-  "profileSubscribeButtonLabel": "Obuna bo'lish · {price}",
-  "@profileSubscribeButtonLabel": {
-    "placeholders": { "price": { "type": "String" } }
-  },
   "profileUserLevelBadge": "B1 Level",
 
   "dictionaryLoadError": "Yuklanmadi",
@@ -1043,7 +842,6 @@
   "vocabularyDefinitionPreparing": "Ta'rif tayyorlanmoqda…",
   "vocabularyExampleLabel": "MISOL GAP",
 
-  "speakingReportLockedCardOpenLabel": "Ochish",
   "speakingReportMonthlyPlanMonthLabel": "OY {index}",
   "@speakingReportMonthlyPlanMonthLabel": {
     "placeholders": { "index": { "type": "int" } }
@@ -1124,13 +922,5 @@
       "active": { "type": "String" },
       "target": { "type": "String" }
     }
-  },
-  "speakingReportUnlockPaymentTitle": "Hisobotni ochish",
-  "speakingReportUnlockTitle": "Hisobotni to'liq oching",
-  "speakingReportUnlockDescription": "Bir martalik to'lov — bu hisobotning barcha qulflangan tafsilotlari faqat shu hisobot uchun ochiladi. ",
-  "speakingReportUnlockPriceCardLabel": "Bu hisobot uchun",
-  "speakingReportUnlockOneTimePayment": "Bir martalik to'lov",
-  "speakingReportUnlockPayButton": "To'lash",
-  "speakingReportUnlockUnlimitedButton": "Cheksiz hisobotlar — obuna oling",
-  "speakingReportUnlockCurrencySom": "so'm"
+  }
 }

@@ -3,7 +3,6 @@ class ConversationSummary {
     required this.id,
     required this.readyForAnalyze,
     required this.hasReport,
-    required this.isFullReportAvailable,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -15,7 +14,6 @@ class ConversationSummary {
   /// True when the learner can view the full report (active subscription or
   /// already paid for a one-time unlock). False = report exists but is gated
   /// behind the paywall.
-  final bool isFullReportAvailable;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,7 +25,6 @@ class ConversationSummary {
       id: json['id'] as String? ?? '',
       readyForAnalyze: json['readyForAnalyze'] as bool? ?? false,
       hasReport: json['hasReport'] as bool? ?? false,
-      isFullReportAvailable: json['isFullReportAvailable'] as bool? ?? false,
       createdAt: parse(json['createdAt']),
       updatedAt: parse(json['updatedAt']),
     );
