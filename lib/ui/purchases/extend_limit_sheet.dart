@@ -21,11 +21,19 @@ const _privacyUrl = 'https://www.myteacher.uz/docs/privacy_policy.html';
 /// localized store prices come from the RevenueCat "current" offering. After
 /// a completed purchase the bought minutes are added through the API.
 class ExtendLimitSheet extends ConsumerStatefulWidget {
-  const ExtendLimitSheet({super.key});
+  const ExtendLimitSheet({super.key, this.limitReached = true});
+
+  /// Whether the sheet was opened because the free limit ran out, as opposed
+  /// to a voluntary top-up. Only changes the subtitle.
+  final bool limitReached;
 
   /// Returns true when the user completed a purchase. Returns false without
   /// showing anything while RevenueCat is not configured.
-  static Future<bool> show(BuildContext context, WidgetRef ref) async {
+  static Future<bool> show(
+    BuildContext context,
+    WidgetRef ref, {
+    bool limitReached = true,
+  }) async {
     if (!ref.read(purchasesControllerProvider.notifier).isEnabled) {
       return false;
     }
@@ -37,7 +45,7 @@ class ExtendLimitSheet extends ConsumerStatefulWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => const ExtendLimitSheet(),
+      builder: (_) => ExtendLimitSheet(limitReached: limitReached),
     );
     return result ?? false;
   }
@@ -166,7 +174,9 @@ class _ExtendLimitSheetState extends ConsumerState<ExtendLimitSheet> {
             ),
             const SizedBox(height: 6),
             Text(
-              l10n.purchaseSheetSubtitle,
+              widget.limitReached
+                  ? l10n.purchaseSheetSubtitle
+                  : l10n.purchaseSheetSubtitleTopUp,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xFF64748B),

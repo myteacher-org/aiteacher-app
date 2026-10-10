@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:ai_teacher/app/router/app_router.dart';
+import 'package:ai_teacher/core/purchases/presentation/purchases_controller.dart';
 import 'package:ai_teacher/core/speaking/data/speaking_repository.dart';
 import 'package:ai_teacher/core/speaking/presentation/speaking_controller.dart';
 import 'package:ai_teacher/core/student_activity/data/student_activity_socket.dart';
@@ -63,6 +64,17 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
       ..showSnackBar(SnackBar(content: Text(l10n.speakingScreenLimitTitle)));
     _onBack();
     return false;
+  }
+
+  /// Voluntary top-up from the top bar, available at any time.
+  Future<void> _onTopUpTap() async {
+    final purchased = await ExtendLimitSheet.show(
+      context,
+      ref,
+      limitReached: false,
+    );
+    if (!mounted || !purchased) return;
+    ref.invalidate(conversationLimitProvider);
   }
 
   String _formatDuration(Duration d) {
@@ -151,6 +163,9 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
     final l10n = AppLocalizations.of(context);
     final statusText = _statusText(state, l10n);
     final fallback = l10n.speakingScreenFallbackGreeting;
+    final purchasesEnabled = ref
+        .read(purchasesControllerProvider.notifier)
+        .isEnabled;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark.copyWith(
@@ -162,7 +177,12 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              PartnerTopBar(timerLabel: timerLabel, onBack: _onBack),
+              PartnerTopBar(
+                timerLabel: timerLabel,
+                onBack: _onBack,
+                topUpLabel: l10n.purchaseTopUpButton,
+                onTopUp: purchasesEnabled ? _onTopUpTap : null,
+              ),
               const SizedBox(height: 24),
               PartnerAvatar(limitFraction: limitFraction),
               const SizedBox(height: 24),

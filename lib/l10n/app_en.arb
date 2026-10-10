@@ -840,5 +840,7 @@
   "purchaseCreditFailedMessage": "Payment went through, but the minutes couldn't be added. Please contact support.",
   "purchaseLoadError": "Couldn't load prices",
   "purchaseTermsLabel": "Terms of Use",
-  "purchasePrivacyLabel": "Privacy Policy"
+  "purchasePrivacyLabel": "Privacy Policy",
+  "purchaseSheetSubtitleTopUp": "Get more AI speaking minutes to keep practicing with your AI teacher.",
+  "purchaseTopUpButton": "Buy minutes"
 }

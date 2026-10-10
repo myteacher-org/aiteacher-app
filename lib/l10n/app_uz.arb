@@ -840,5 +840,7 @@
   "purchaseCreditFailedMessage": "To'lov qabul qilindi, lekin daqiqalar qo'shilmadi. Iltimos, qo'llab-quvvatlash xizmatiga yozing.",
   "purchaseLoadError": "Narxlarni yuklab bo'lmadi",
   "purchaseTermsLabel": "Foydalanish shartlari",
-  "purchasePrivacyLabel": "Maxfiylik siyosati"
+  "purchasePrivacyLabel": "Maxfiylik siyosati",
+  "purchaseSheetSubtitleTopUp": "AI ustoz bilan mashq qilishni davom ettirish uchun qo'shimcha daqiqalar oling.",
+  "purchaseTopUpButton": "Daqiqa olish"
 }
