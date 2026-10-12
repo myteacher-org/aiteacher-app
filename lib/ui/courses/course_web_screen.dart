@@ -283,6 +283,36 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
     _controller?.evaluateJavascript(source: script);
   }
 
+  bool _mediaDialogShown = false;
+
+  /// Camera/mic were permanently denied — explain and offer the settings page.
+  /// Shown once per screen so repeated WebRTC requests don't stack dialogs.
+  void _showMediaSettingsDialog() {
+    if (!mounted || _mediaDialogShown) return;
+    _mediaDialogShown = true;
+    final l10n = AppLocalizations.of(context);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.mediaPermissionTitle),
+        content: Text(l10n.mediaPermissionMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.mediaPermissionLater),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings();
+            },
+            child: Text(l10n.mediaPermissionOpenSettings),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Keep the chatbot session alive for the entire duration of this screen.
@@ -376,7 +406,13 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
                 // the JS-side request alone does nothing unless the
                 // underlying Android runtime permission has actually been
                 // granted first — request it here.
-                await [Permission.camera, Permission.microphone].request();
+                final statuses =
+                    await [Permission.camera, Permission.microphone].request();
+                // Once denied with "don't ask again" the OS never shows the
+                // prompt again — the only way back is the app settings page.
+                if (statuses.values.any((s) => s.isPermanentlyDenied)) {
+                  _showMediaSettingsDialog();
+                }
                 return PermissionResponse(
                   resources: request.resources,
                   action: PermissionResponseAction.GRANT,
@@ -395,6 +431,15 @@ class _CourseWebScreenState extends ConsumerState<CourseWebScreen> {
               },
               onWebViewCreated: (controller) {
                 _controller = controller;
+                // The lesson room's "Sozlamalarni ochish" button (live-lesson
+                // room.js) opens the app settings to re-enable camera/mic.
+                controller.addJavaScriptHandler(
+                  handlerName: 'sozlamalarniOch',
+                  callback: (args) async {
+                    await openAppSettings();
+                    return true;
+                  },
+                );
                 controller.addJavaScriptHandler(
                   handlerName: 'playVideo',
                   callback: (args) {

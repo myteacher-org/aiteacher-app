@@ -1160,5 +1160,9 @@
   "speakingReportUnlockOneTimePayment": "One-time payment",
   "speakingReportUnlockPayButton": "Pay",
   "speakingReportUnlockUnlimitedButton": "Unlimited reports — subscribe",
-  "speakingReportUnlockCurrencySom": "UZS"
+  "speakingReportUnlockCurrencySom": "UZS",
+  "mediaPermissionTitle": "Camera and microphone are blocked",
+  "mediaPermissionMessage": "So your teacher can see and hear you, allow camera and microphone for MyTeacher in phone settings: Permissions → Camera and Microphone → Allow.",
+  "mediaPermissionLater": "Later",
+  "mediaPermissionOpenSettings": "Open settings"
 }

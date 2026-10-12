@@ -1160,5 +1160,9 @@
   "speakingReportUnlockOneTimePayment": "Bir martalik to'lov",
   "speakingReportUnlockPayButton": "To'lash",
   "speakingReportUnlockUnlimitedButton": "Cheksiz hisobotlar — obuna oling",
-  "speakingReportUnlockCurrencySom": "so'm"
+  "speakingReportUnlockCurrencySom": "so'm",
+  "mediaPermissionTitle": "Kamera va mikrofon yopiq",
+  "mediaPermissionMessage": "Darsda ustoz sizni ko'rishi va eshitishi uchun telefon sozlamalarida MyTeacher ilovasiga kamera va mikrofon ruxsatini bering: Ruxsatlar → Kamera va Mikrofon → Ruxsat berish.",
+  "mediaPermissionLater": "Keyinroq",
+  "mediaPermissionOpenSettings": "Sozlamalarni ochish"
 }
