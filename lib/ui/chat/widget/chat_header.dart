@@ -8,14 +8,21 @@ class ChatHeader extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onClose,
+    this.avatarUrl,
+    this.initials,
+    this.isOnline,
   });
 
   final String title;
   final String subtitle;
   final VoidCallback onClose;
+  final String? avatarUrl;
+  final String? initials;
+  final bool? isOnline;
 
   @override
   Widget build(BuildContext context) {
+    final hasCustomAvatar = avatarUrl != null || initials != null;
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -26,7 +33,69 @@ class ChatHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const _Pictogram(),
+          if (hasCustomAvatar)
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: avatarUrl != null
+                        ? Image.network(
+                            avatarUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => Center(
+                              child: Text(
+                                initials ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              initials ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+                if (isOnline != null)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: isOnline!
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            )
+          else
+            const _Pictogram(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -37,18 +106,24 @@ class ChatHeader extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: Color(0xFF111111),
-                    fontSize: 20,
+                    fontSize: 17,
                     fontWeight: FontWeight.w800,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF999999),
+                  style: TextStyle(
+                    color: (isOnline == true)
+                        ? const Color(0xFF059669)
+                        : const Color(0xFF999999),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

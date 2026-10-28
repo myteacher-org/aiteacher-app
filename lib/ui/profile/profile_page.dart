@@ -1,3 +1,5 @@
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
+import 'package:ai_teacher/ui/main/main_screen.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/auth/data/auth_repository.dart';
@@ -169,6 +171,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
     final displayInitial = user?.initial ?? '';
     final subscription = user?.activeSubscription;
+    final myMentor = ref.watch(myMentorProvider).valueOrNull;
     final hasActiveSubscription = subscription != null;
     final proPaketSubtitle = hasActiveSubscription
         ? _subscriptionSubtitle(l10n, locale, subscription.endDate)
@@ -268,6 +271,38 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                   onTap: () => SubscriptionDetailsSheet.show(context),
                 ),
+                if (hasActiveSubscription)
+                  ProfileRow(
+                    icon: Icons.school_outlined,
+                    iconColor: const Color(0xFF0D9488),
+                    iconBackground: const Color(0xFFCCFBF1),
+                    title: myMentor != null
+                        ? (myMentor.mentor.fullName.isNotEmpty
+                            ? myMentor.mentor.fullName
+                            : '${myMentor.mentor.firstName} ${myMentor.mentor.lastName}'.trim())
+                        : l10n.myMentorPendingTitle,
+                    subtitle: myMentor != null
+                        ? l10n.myMentorTitle
+                        : l10n.myMentorPendingSubtitle,
+                    trailing: ProfileTrailingValue(
+                      badge: myMentor != null && myMentor.isOnline
+                          ? ProfilePillBadge(
+                              label: l10n.myMentorOnline,
+                              background: const Color(0xFFDCFCE7),
+                              textColor: const Color(0xFF15803D),
+                            )
+                          : null,
+                      showChevron: myMentor != null,
+                    ),
+                    onTap: myMentor != null
+                        ? () {
+                            context.goNamed(
+                              AppRoute.main.name,
+                              extra: MainScreen.coursesTab,
+                            );
+                          }
+                        : null,
+                  ),
                 ProfileRow(
                   icon: Icons.credit_card_rounded,
                   iconColor: const Color(0xFF2563EB),

@@ -20,6 +20,7 @@ class UpdateInfo {
 
 class UpdateChecker {
   static Future<UpdateInfo?> check() async {
+    if (kDebugMode) return null;
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;

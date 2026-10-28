@@ -13,7 +13,10 @@ class NotificationRepository {
   final Dio _dio;
 
   Future<List<UserNotification>> list({int limit = 30, String? before}) async {
-    final params = <String, dynamic>{'limit': limit};
+    final params = <String, dynamic>{
+      'limit': limit,
+      'appName': 'student',
+    };
     if (before != null) params['before'] = before;
     final response = await _dio.get<List<dynamic>>(
       'notifications',
@@ -28,6 +31,7 @@ class NotificationRepository {
   Future<int> unreadCount() async {
     final response = await _dio.get<Map<String, dynamic>>(
       'notifications/unread-count',
+      queryParameters: {'appName': 'student'},
     );
     return (response.data?['count'] as num?)?.toInt() ?? 0;
   }
@@ -40,6 +44,9 @@ class NotificationRepository {
   }
 
   Future<void> markAllRead() async {
-    await _dio.patch<void>('notifications/read-all');
+    await _dio.patch<void>(
+      'notifications/read-all',
+      queryParameters: {'appName': 'student'},
+    );
   }
 }

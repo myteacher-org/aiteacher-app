@@ -19,7 +19,7 @@ class PartnerControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(40, 0, 40, 24),
+      padding: const EdgeInsets.fromLTRB(40, 0, 40, 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,

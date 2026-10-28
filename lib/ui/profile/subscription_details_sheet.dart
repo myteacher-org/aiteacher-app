@@ -1,3 +1,6 @@
+import 'package:ai_teacher/app/data/network_config.dart';
+import 'package:ai_teacher/core/assignment/data/assignment_dtos.dart';
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/plan/data/plan_dtos.dart';
@@ -39,6 +42,8 @@ class _SubscriptionDetailsSheetState
     final user = ref.watch(currentUserProvider).valueOrNull;
     final plansAsync = ref.watch(availablePlansProvider);
     final isDemo = ref.watch(isDemoAccountProvider);
+    final hasActiveSub = user?.activeSubscription != null;
+    final myMentor = ref.watch(myMentorProvider).valueOrNull;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
@@ -70,8 +75,12 @@ class _SubscriptionDetailsSheetState
                     _CurrentSubscriptionCard(
                       subscription: user?.activeSubscription,
                     ),
+                    if (hasActiveSub && myMentor != null) ...[
+                      const SizedBox(height: 16),
+                      _MentorInfoCard(myMentor: myMentor),
+                    ],
                     // Demo accounts get the status card only — no plans to buy.
-                    if (!isDemo) ...[
+                    if (!isDemo && !hasActiveSub) ...[
                       const SizedBox(height: 20),
                       Text(
                         l10n.profileAvailablePlansLabel,
@@ -716,4 +725,163 @@ String _formatPrice(num value) {
     buf.write(s[i]);
   }
   return "${buf.toString()} so'm";
+}
+
+
+class _MentorInfoCard extends StatelessWidget {
+  const _MentorInfoCard({required this.myMentor});
+
+  final MyMentor myMentor;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final mentor = myMentor.mentor;
+    final name = mentor.fullName.isNotEmpty
+        ? mentor.fullName
+        : '${mentor.firstName} ${mentor.lastName}'.trim();
+    final imageUrl = (mentor.avatar != null && mentor.avatar!.isNotEmpty)
+        ? NetworkConfig.resolveStatic(mentor.avatar!)
+        : null;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF0D9488), Color(0xFF2DD4BF)],
+              ),
+            ),
+            child: ClipOval(
+              child: imageUrl != null
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Center(
+                        child: Text(
+                          mentor.initials,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        mentor.initials,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.myMentorTitle,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: myMentor.isOnline
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF94A3B8),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      myMentor.isOnline
+                          ? l10n.myMentorOnline
+                          : l10n.myMentorOffline,
+                      style: TextStyle(
+                        color: myMentor.isOnline
+                            ? const Color(0xFF059669)
+                            : const Color(0xFF94A3B8),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          FilledButton.tonal(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.goNamed(
+                AppRoute.main.name,
+                extra: MainScreen.chatTab,
+              );
+            },
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              foregroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              l10n.myMentorChatButton,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

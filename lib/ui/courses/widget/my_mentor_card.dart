@@ -1,3 +1,4 @@
+import 'package:ai_teacher/core/user/presentation/current_user_controller.dart';
 import 'package:ai_teacher/app/data/network_config.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/ui/courses/course_web_screen.dart';
@@ -22,7 +23,13 @@ class MyMentorCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final myMentor = ref.watch(myMentorProvider).valueOrNull;
-    if (myMentor == null) return const SizedBox.shrink();
+    if (myMentor == null) {
+      final user = ref.watch(currentUserProvider).valueOrNull;
+      if (user?.activeSubscription != null) {
+        return const _MentorPendingCard();
+      }
+      return const SizedBox.shrink();
+    }
 
     final mentor = myMentor.mentor;
     final activeLesson = ref.watch(activeLessonProvider).valueOrNull;
@@ -362,4 +369,74 @@ String _formatDate(DateTime d, BuildContext context) {
   return isEn
       ? '$month ${local.day}, ${local.year}'
       : '${local.day}-$month ${local.year}';
+}
+
+
+class _MentorPendingCard extends StatelessWidget {
+  const _MentorPendingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D9488).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.school_rounded,
+              color: Color(0xFF0D9488),
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.myMentorPendingTitle,
+                  style: const TextStyle(
+                    color: Color(0xFF0F172A),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.myMentorPendingCourseNotice,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

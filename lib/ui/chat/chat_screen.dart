@@ -1,3 +1,5 @@
+import 'package:ai_teacher/app/data/network_config.dart';
+import 'package:ai_teacher/core/assignment/presentation/my_assignments_controller.dart';
 import 'package:ai_teacher/app/router/app_router.dart';
 import 'package:ai_teacher/app/theme/app_colors.dart';
 import 'package:ai_teacher/core/chat/data/chat_dtos.dart' show ChatMessage;
@@ -165,6 +167,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(chatRoomControllerProvider);
     final currentUserId = ref.watch(currentUserIdProvider);
+    final myMentor = ref.watch(myMentorProvider).valueOrNull;
+    final mentor = myMentor?.mentor;
+    final mentorName = mentor != null
+        ? (mentor.fullName.isNotEmpty
+            ? mentor.fullName
+            : '${mentor.firstName} ${mentor.lastName}'.trim())
+        : null;
+    final mentorStatus = myMentor != null
+        ? (myMentor.isOnline ? l10n.myMentorOnline : l10n.myMentorOffline)
+        : null;
+    final mentorAvatarUrl = (mentor?.avatar != null && mentor!.avatar!.isNotEmpty)
+        ? NetworkConfig.resolveStatic(mentor.avatar!)
+        : null;
+    final mentorInitials = mentor?.initials;
 
     if (state.error != null && state.error != _lastErrorShown) {
       _lastErrorShown = state.error;
@@ -190,9 +206,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           child: Column(
             children: [
               ChatHeader(
-                title: l10n.chatTitle,
-                subtitle: l10n.chatSubtitle,
+                title: mentorName ?? l10n.chatTitle,
+                subtitle: mentorStatus != null
+                    ? '${l10n.myMentorTitle} · $mentorStatus'
+                    : l10n.chatSubtitle,
                 onClose: _onBack,
+                avatarUrl: mentorAvatarUrl,
+                initials: mentorInitials,
+                isOnline: myMentor?.isOnline,
               ),
               Expanded(child: _buildBody(state, groups, l10n)),
               if (state.pendingAttachmentName != null)
