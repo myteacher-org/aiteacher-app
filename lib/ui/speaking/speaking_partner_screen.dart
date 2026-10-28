@@ -216,6 +216,33 @@ class _SpeakingPartnerScreenState extends ConsumerState<SpeakingPartnerScreen> {
                 recording: state.phase == SpeakingPhase.recording,
                 reportReady: state.readyForAnalyze,
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      size: 13,
+                      color: Color(0xFF8A94A6),
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        l10n.speakingScreenGoogleDisclaimer,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF8A94A6),
+                          fontWeight: FontWeight.w400,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

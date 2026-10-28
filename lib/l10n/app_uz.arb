@@ -480,6 +480,9 @@
   },
   "myMentorChatButton": "Suhbat",
   "myMentorLiveLessonButton": "Jonli dars",
+  "myMentorPendingTitle": "Ustoz biriktirilmoqda",
+  "myMentorPendingSubtitle": "Tez orada sizga shaxsiy mentor biriktiriladi",
+  "myMentorPendingCourseNotice": "Sizning ustozingiz tez orada biriktiriladi. Biriktirilgach, darslar jadvali va muloqot shu yerda ochiladi.",
   "coursesMentorBadge": "Mentor bilan",
   "coursesSelectDurationLabel": "Muddat tanlang",
   "coursesWhatsIncludedLabel": "Nima kiradi",
@@ -791,6 +794,7 @@
   "speakingScreenPaymentAutoUnlock": "Tasdiqlangach hisobot avtomatik ochiladi",
   "speakingScreenUnlimitedReportsTitle": "Cheksiz to'liq hisobotlar",
   "speakingScreenUnlimitedReportsSubtitle": "Pro paketga obuna bo'ling — barcha hisobotlarni cheksiz oling",
+  "speakingScreenGoogleDisclaimer": "Sizning yozilgan ovozingiz qayta ishlash uchun Googlega yuboriladi",
 
   "profileAddCardInvalidDataError": "Karta ma'lumotlari noto'g'ri",
   "profileAddCardNotFoundError": "Karta topilmadi",

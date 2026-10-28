@@ -480,6 +480,9 @@
   },
   "myMentorChatButton": "Chat",
   "myMentorLiveLessonButton": "Live lesson",
+  "myMentorPendingTitle": "Mentor is being assigned",
+  "myMentorPendingSubtitle": "A personal mentor will be assigned to you soon",
+  "myMentorPendingCourseNotice": "Your mentor will be assigned soon. Once assigned, your lesson schedule and chat will appear here.",
   "coursesMentorBadge": "With mentor",
   "coursesSelectDurationLabel": "Select duration",
   "coursesWhatsIncludedLabel": "What's included",
@@ -791,6 +794,7 @@
   "speakingScreenPaymentAutoUnlock": "The report unlocks automatically once confirmed",
   "speakingScreenUnlimitedReportsTitle": "Unlimited full reports",
   "speakingScreenUnlimitedReportsSubtitle": "Subscribe to Pro — get unlimited reports",
+  "speakingScreenGoogleDisclaimer": "Your recorded voice will be sent to Google for processing",
 
   "profileAddCardInvalidDataError": "Card details are incorrect",
   "profileAddCardNotFoundError": "Card not found",
